@@ -50,7 +50,6 @@ class Import_Data_PCDAS:
         except requests.exceptions.RequestException as e:
             print(f"Error when downloading file {url}: {e}")
             return False
-
     @staticmethod
     def create_path(path_download: str):
         """
@@ -58,17 +57,17 @@ class Import_Data_PCDAS:
         :param path_download(str): The full path of the location where you want to create the folder.
         :return:
         """
-        # Verifica se o diretório não existe
+        # Checks if the directory does not exist
         if not os.path.exists(path_download):
             try:
-                # Cria o diretório
+                # Create the directory
                 os.makedirs(path_download)
-                print(f"Pasta '{path_download}' criada com sucesso!")
+                print(f"Path {path_download} successfully created!")
             except OSError as e:
-                # Em caso de erro
-                print(f"Erro ao criar pasta '{path_download}': {e}")
+                # In case of error
+                print(f"Error creating folder {path_download}: {e}")
         else:
-            print(f"Pasta '{path_download}' já existe.")
+            print(f"path {path_download} already exists")
     @staticmethod
     def list_path_files(path: str):
         """
@@ -88,20 +87,20 @@ class Import_Data_PCDAS:
         url = 'https://bigdata-arquivos.icict.fiocruz.br/PUBLICO/SIM_DOFET/ETLSIM.DOFET.zip'
         aa = self.download_data(url=url, path_download=path_download)
         if aa:
-            # Identique os arquivos na pasta
+            # Identify the files in the folder
             path_ = f'{path_download}/ETLSIM.DOFET/dados/apache-airflow/data/SIM_DOFET'
             lista_arq = self.list_path_files(path=path_)
-            # Filtrar endereços de acordo com os anos de interesse
+            # Filter addresses according to the years of interest
             enderecos_filtrados = [endereco for endereco in lista_arq if any(str(ano) in endereco for ano in year)]
-            # Criando a pasta no caminho
+            # Creating the folder in the path
             nova_pasta = f'{path_download}/SIM_DOFET'
             self.create_path(path_download=nova_pasta)
-            # Copiando os arquivos para a nova pasta
+            # Copying the files to the new folder
             for i in enderecos_filtrados:
                 shutil.copy(i, nova_pasta)
-            # Apaga a pasta que foi baixada
+            # Delete the folder that was downloaded
             shutil.rmtree(f'{path_download}/ETLSIM.DOFET')
-            print('Pasta SIM_DOFET criada com sucesso')
+            print('SIM_DOFET folder created successfully')
         else:
-            print(f'Verifique a url {url} ou o caminho {path_download}')
+            print(f'Check the url {url} or the way {path_download}')
         pass
