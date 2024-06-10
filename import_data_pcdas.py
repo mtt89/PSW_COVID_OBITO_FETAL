@@ -16,7 +16,7 @@ class Import_Data_PCDAS:
 
 
     @staticmethod
-    def download_data(url, path_download):
+    def download_data(url: str, path_download: str):
         """
         Downloads a file from a URL and saves it to the specified location.
 
@@ -52,7 +52,12 @@ class Import_Data_PCDAS:
             return False
 
     @staticmethod
-    def create_path(path_download):
+    def create_path(path_download: str):
+        """
+        Creates a folder in a directory if it does not exist
+        :param path_download(str): The full path of the location where you want to create the folder.
+        :return:
+        """
         # Verifica se o diretório não existe
         if not os.path.exists(path_download):
             try:
@@ -65,7 +70,12 @@ class Import_Data_PCDAS:
         else:
             print(f"Pasta '{path_download}' já existe.")
     @staticmethod
-    def list_path_files(path):
+    def list_path_files(path: str):
+        """
+        Maps files to a specified path
+        :param path (str): Path of the folder that should be mapped
+        :return: Returns a list with the path of all files in the folder.
+        """
         arquivos = []
         for diretorio_raiz, _, arquivos_na_pasta in os.walk(path):
             for arquivo in arquivos_na_pasta:
