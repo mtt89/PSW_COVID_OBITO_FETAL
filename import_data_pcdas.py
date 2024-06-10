@@ -16,7 +16,7 @@ class Import_Data_PCDAS:
 
 
     @staticmethod
-    def download_data(url: str, path_download: str):
+    def function_download_data(url: str, path_download: str):
         """
         Downloads a file from a URL and saves it to the specified location.
 
@@ -51,7 +51,7 @@ class Import_Data_PCDAS:
             print(f"Error when downloading file {url}: {e}")
             return False
     @staticmethod
-    def create_path(path_download: str):
+    def function_create_path(path_download: str):
         """
         Creates a folder in a directory if it does not exist
         :param path_download(str): The full path of the location where you want to create the folder.
@@ -69,7 +69,7 @@ class Import_Data_PCDAS:
         else:
             print(f"path {path_download} already exists")
     @staticmethod
-    def list_path_files(path: str):
+    def function_list_path_files(path: str):
         """
         Maps files to a specified path
         :param path (str): Path of the folder that should be mapped
@@ -101,6 +101,28 @@ class Import_Data_PCDAS:
             # Delete the folder that was downloaded
             shutil.rmtree(f'{path_download}/ETLSIM.DOFET')
             print('SIM_DOFET folder created successfully')
+        else:
+            print(f'Check the url {url} or the way {path_download}')
+        pass
+
+    def function_import_sinasc(self, path_download: str, year: list):
+        url = 'https://bigdata-arquivos.icict.fiocruz.br/PUBLICO/SINASC/ETLSINASC.zip'
+        aa = self.download_data(url=url, path_download=path_download)
+        if aa:
+            # Identify the files in the folder
+            path_ = f'{path_download}/ETLSIM.DOFET/dados/apache-airflow/data/SIM_DOFET'
+            lista_arq = self.list_path_files(path=path_)
+            # Filter addresses according to the years of interest
+            enderecos_filtrados = [endereco for endereco in lista_arq if any(str(ano) in endereco for ano in year)]
+            # Creating the folder in the path
+            nova_pasta = f'{path_download}/SIM_DOFET'
+            self.create_path(path_download=nova_pasta)
+            # Copying the files to the new folder
+            for i in enderecos_filtrados:
+                shutil.copy(i, nova_pasta)
+            # Delete the folder that was downloaded
+            shutil.rmtree(f'{path_download}/ETLSIM.DOFET')
+            print('SINASC folder created successfully')
         else:
             print(f'Check the url {url} or the way {path_download}')
         pass
