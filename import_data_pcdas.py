@@ -8,13 +8,7 @@ import shutil
 class Import_Data_PCDAS:
     """
     Class to download public health data from the PCDAS platform.
-    Attributes:
-        dataset: The name of the dataset.
     """
-    def __init__(self, dataset: str):
-        self.dataset = 'SIM_DOFET'
-
-
     @staticmethod
     def function_download_data(url: str, path_download: str):
         """
@@ -85,16 +79,16 @@ class Import_Data_PCDAS:
 
     def function_import_sim_dofet(self, path_download: str, year: list):
         url = 'https://bigdata-arquivos.icict.fiocruz.br/PUBLICO/SIM_DOFET/ETLSIM.DOFET.zip'
-        aa = self.download_data(url=url, path_download=path_download)
+        aa = self.function_download_data(url=url, path_download=path_download)
         if aa:
             # Identify the files in the folder
             path_ = f'{path_download}/ETLSIM.DOFET/dados/apache-airflow/data/SIM_DOFET'
-            lista_arq = self.list_path_files(path=path_)
+            lista_arq = self.function_list_path_files(path=path_)
             # Filter addresses according to the years of interest
             enderecos_filtrados = [endereco for endereco in lista_arq if any(str(ano) in endereco for ano in year)]
             # Creating the folder in the path
             nova_pasta = f'{path_download}/SIM_DOFET'
-            self.create_path(path_download=nova_pasta)
+            self.function_create_path(path_download=nova_pasta)
             # Copying the files to the new folder
             for i in enderecos_filtrados:
                 shutil.copy(i, nova_pasta)
@@ -105,24 +99,3 @@ class Import_Data_PCDAS:
             print(f'Check the url {url} or the way {path_download}')
         pass
 
-    def function_import_sinasc(self, path_download: str, year: list):
-        url = 'https://bigdata-arquivos.icict.fiocruz.br/PUBLICO/SINASC/ETLSINASC.zip'
-        aa = self.download_data(url=url, path_download=path_download)
-        if aa:
-            # Identify the files in the folder
-            path_ = f'{path_download}/ETLSIM.DOFET/dados/apache-airflow/data/SIM_DOFET'
-            lista_arq = self.list_path_files(path=path_)
-            # Filter addresses according to the years of interest
-            enderecos_filtrados = [endereco for endereco in lista_arq if any(str(ano) in endereco for ano in year)]
-            # Creating the folder in the path
-            nova_pasta = f'{path_download}/SIM_DOFET'
-            self.create_path(path_download=nova_pasta)
-            # Copying the files to the new folder
-            for i in enderecos_filtrados:
-                shutil.copy(i, nova_pasta)
-            # Delete the folder that was downloaded
-            shutil.rmtree(f'{path_download}/ETLSIM.DOFET')
-            print('SINASC folder created successfully')
-        else:
-            print(f'Check the url {url} or the way {path_download}')
-        pass
