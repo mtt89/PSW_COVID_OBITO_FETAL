@@ -99,3 +99,46 @@ class Import_Data_PCDAS:
             print(f'Check the url {url} or the way {path_download}')
         pass
 
+    def function_import_sinasc(self, path_download: str, year: list):
+        url = 'https://bigdata-arquivos.icict.fiocruz.br/PUBLICO/SINASC/ETLSINASC.zip'
+        aa = self.function_download_data(url=url, path_download=path_download)
+        if aa:
+            # Identify the files in the folder
+            path_ = f'{path_download}/ETLSINASC'
+            lista_arq = self.function_list_path_files(path=path_)
+            # Filter addresses according to the years of interest
+            enderecos_filtrados = [endereco for endereco in lista_arq if any(str(ano) in endereco for ano in year)]
+            # Creating the folder in the path
+            nova_pasta = f'{path_download}/SINASC'
+            self.create_path(path_download=nova_pasta)
+            # Copying the files to the new folder
+            for i in enderecos_filtrados:
+                shutil.copy(i, nova_pasta)
+            # Delete the folder that was downloaded
+            shutil.rmtree(f'{path_download}/ETLSINASC')
+            print('SINASC folder created successfully')
+        else:
+            print(f'Check the url {url} or the way {path_download}')
+        pass
+
+    def function_import_cnes(self, path_download: str, year: list):
+        url = 'https://bigdata-arquivos.icict.fiocruz.br/PUBLICO/CNES/ETLCNES.zip'
+        aa = self.function_download_data(url=url, path_download=path_download)
+        if aa:
+            # Identify the files in the folder
+            path_ = f'{path_download}/ETLCNES'
+            lista_arq = self.function_list_path_files(path=path_)
+            # Filter addresses according to the years of interest
+            enderecos_filtrados = [endereco for endereco in lista_arq if any(str(ano) in endereco for ano in year)]
+            # Creating the folder in the path
+            nova_pasta = f'{path_download}/CNES'
+            self.create_path(path_download=nova_pasta)
+            # Copying the files to the new folder
+            for i in enderecos_filtrados:
+                shutil.copy(i, nova_pasta)
+            # Delete the folder that was downloaded
+            shutil.rmtree(f'{path_download}/ETLCNES')
+            print('CNES folder created successfully')
+        else:
+            print(f'Check the url {url} or the way {path_download}')
+        pass
