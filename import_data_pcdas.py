@@ -78,6 +78,14 @@ class Import_Data_PCDAS:
 ########################################################################################################################
 
     def function_import_sim_dofet(self, path_download: str, year: list):
+        """
+        Once the SIM DOFET folder is selected, select the files from the desired years and save them in the indicated
+        folder, with the name SIM_DOFET
+        :param path_download: Path where the download should be made
+        :param year: Years of interest
+        :return:
+        A folder with the name of the database and the years of interest will be saved in the specified path.
+        """
         url = 'https://bigdata-arquivos.icict.fiocruz.br/PUBLICO/SIM_DOFET/ETLSIM.DOFET.zip'
         aa = self.function_download_data(url=url, path_download=path_download)
         if aa:
@@ -100,6 +108,14 @@ class Import_Data_PCDAS:
         pass
 
     def function_import_sinasc(self, path_download: str, year: list):
+        """
+       Once the SINASC folder is selected, select the files from the desired years and save them in the indicated
+       folder, with the name SINASC
+       :param path_download: Path where the download should be made
+       :param year: Years of interest
+       :return:
+       A folder with the name of the database and the years of interest will be saved in the specified path.
+       """
         url = 'https://bigdata-arquivos.icict.fiocruz.br/PUBLICO/SINASC/ETLSINASC.zip'
         aa = self.function_download_data(url=url, path_download=path_download)
         if aa:
@@ -122,6 +138,14 @@ class Import_Data_PCDAS:
         pass
 
     def function_import_cnes(self, path_download: str, year: list):
+        """
+        Once the CNES folder is selected, select the files from the desired years and save them in the indicated
+        folder, with the name CNES
+        :param path_download: Path where the download should be made
+        :param year: Years of interest
+        :return:
+        A folder with the name of the database and the years of interest will be saved in the specified path.
+        """
         url = 'https://bigdata-arquivos.icict.fiocruz.br/PUBLICO/CNES/ETLCNES.zip'
         aa = self.function_download_data(url=url, path_download=path_download)
         if aa:
