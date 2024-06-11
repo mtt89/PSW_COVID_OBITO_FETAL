@@ -1,4 +1,5 @@
 import pandas as pd
+from Funcoes_auxiliares.func_aux import func_apend_data
 
 """
 --------------------------------- Due to the volume it may take some time ----------------------------------------------
@@ -16,4 +17,37 @@ Obs:
 ------------------------------------------------------------------------------------------------------------------------
 """
 
+#------------------------------------------------- SIM_DOFET -----------------------------------------------------------
+caminho = 'C:/Users/gabri/Documents/PSW_COVID_OBITO_FETAL/SIM_DOFET'
+variaveis = colunas= [
+    'data_obito'
+    , 'ano_obito'
+    , 'TIPOBITO'
+    , 'ocor_MUNNOMEX'
+    , 'res_MUNNOMEX'
+    , 'ocor_CAPITAL'
+    , 'res_CAPITAL'
+    , 'ocor_REGIAO'
+    , 'res_REGIAO'
+    , 'IDADEMAE'
+    , 'ESCMAE'
+    , 'def_escol_mae'
+    , 'ESCMAE2010'
+    , 'GRAVIDEZ'
+    , 'def_gravidez'
+    , 'GESTACAO'
+    , 'def_gestacao'
+    , 'SEMAGESTAC'
+    , 'SEXO'
+    , 'def_sexo'
+    , 'PESO'
+    , 'OBITOPARTO'
+    , 'def_obito_parto'
+    , 'CAUSABAS'
+    , 'causabas_capitulo'
+    , 'causabas_categoria'
+    , 'causabas_grupo'
+    , 'causabas_subcategoria'
+    ]
+df_sim_dofet = func_apend_data(path=caminho, column=)
 
