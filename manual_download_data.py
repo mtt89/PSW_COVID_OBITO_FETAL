@@ -69,32 +69,3 @@ PCDAS.function_create_path(path_download=nova_pasta)
 # Copying the files to the new folder
 for i in enderecos_filtrados:
     shutil.copy(i, nova_pasta)
-
-
-
-
-
-
-# Create a regular expression to find the year in the file name
-regex_ano = re.compile(r"ETLSIM\.DOFET_(\d{4})_t")
-
-# Cycle through all files in the source folder
-for arquivo in os.listdir(pasta_origem):
-    caminho_completo = os.path.join(pasta_origem, arquivo)
-
-    # Check if it is a file
-    if os.path.isfile(caminho_completo):
-        # Extract the year from the file name
-        match = regex_ano.match(arquivo)
-        if match:
-            ano = match.group(1)
-            # Checks if the year is between ano_inicio and ano_fim
-
-            if ano_inicio <= int(ano) <= ano_fim:
-                # Checks if the year is between 2019 and 2022
-                pasta_destino_ano = os.path.join(pasta_destino, f"ANO_{ano}")
-                # Create destination folder if it doesn't already exist
-                os.makedirs(pasta_destino_ano, exist_ok=True)
-                # Moves the file to the corresponding destination folder
-                shutil.copy(caminho_completo, pasta_destino_ano)
-
