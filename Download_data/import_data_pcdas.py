@@ -126,7 +126,7 @@ class Import_Data_PCDAS:
             enderecos_filtrados = [endereco for endereco in lista_arq if any(str(ano) in endereco for ano in year)]
             # Creating the folder in the path
             nova_pasta = f'{path_download}/SINASC'
-            self.create_path(path_download=nova_pasta)
+            self.function_create_path(path_download=nova_pasta)
             # Copying the files to the new folder
             for i in enderecos_filtrados:
                 shutil.copy(i, nova_pasta)
@@ -157,7 +157,7 @@ class Import_Data_PCDAS:
             enderecos_filtrados = [endereco for endereco in lista_arq if any(str(ano) in endereco for ano in year)]
             # Creating the folder in the path
             nova_pasta = f'{path_download}/CNES'
-            self.create_path(path_download=nova_pasta)
+            self.function_create_path(path_download=nova_pasta)
             # Copying the files to the new folder
             for i in enderecos_filtrados:
                 shutil.copy(i, nova_pasta)
