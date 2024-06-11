@@ -152,6 +152,7 @@ class Import_Data_PCDAS:
             # Identify the files in the folder
             path_ = f'{path_download}/ETLCNES'
             lista_arq = self.function_list_path_files(path=path_)
+            year = [f'__{str(i)[2:]}_' for i in year]
             # Filter addresses according to the years of interest
             enderecos_filtrados = [endereco for endereco in lista_arq if any(str(ano) in endereco for ano in year)]
             # Creating the folder in the path
