@@ -30,13 +30,13 @@ variaveis = colunas= [
     , 'ocor_REGIAO'
     , 'res_REGIAO'
     , 'IDADEMAE'
-    , 'ESCMAE'
+    #, 'ESCMAE'
     #, 'def_escol_mae'
     , 'ESCMAE2010'
     , 'GRAVIDEZ'
-    , 'def_gravidez'
-    , 'GESTACAO'
-    , 'def_gestacao'
+    #, 'def_gravidez'
+    #, 'GESTACAO'
+    #, 'def_gestacao'
     , 'SEMAGESTAC'
     , 'SEXO'
     , 'def_sexo'
@@ -56,7 +56,6 @@ df_sim_dofet['idademae_faixa'] = [func_categorize_idademae(i) for i in df_sim_do
 df_sim_dofet['escolaridade_mae'] = [func_categorize_escolmae(i) for i in df_sim_dofet['ESCMAE2010']]
 df_sim_dofet['tipo_gravidez'] = [func_categorize_gravidez(i) for i in df_sim_dofet['GRAVIDEZ']]
 df_sim_dofet['idade_gestacao_faixa'] = [func_categorize_idade_gest(i) for i in df_sim_dofet['SEMAGESTAC']]
-
 df_sim_dofet['peso_faixa'] = [func_categorize_peso(i) for i in df_sim_dofet['PESO']]
 
 

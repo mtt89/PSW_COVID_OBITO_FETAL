@@ -15,7 +15,7 @@ def func_apend_data(path: str, column: list):
 
 def func_categorize_peso(peso):
     if peso < 500:
-        return "Menor_500"
+        return "menor_500"
     elif 500 <= peso <= 1499:
         return "entre_500_1499"
     elif 1500 <= peso <= 2499:
@@ -24,14 +24,14 @@ def func_categorize_peso(peso):
         return "entre_2500_3500"
     elif 3500 <= peso <= 3999:
         return "entre_3500_3999"
-    elif peso > 3999:
+    elif peso >= 4000:
         return "maior_igual_4000"
     else:
         return "Ignorado"
     
 def func_categorize_idademae(idade):
     if idade <= 19:
-        return "Menor_igual_19"
+        return "menor_igual_19"
     elif 20 <= idade <= 34:
         return "entre_20_34"
     elif 35 <= idade <= 39:
