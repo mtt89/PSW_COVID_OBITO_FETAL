@@ -59,7 +59,42 @@ df_sim_dofet['tipo_gravidez'] = [func_categorize_gravidez(i) for i in df_sim_dof
 df_sim_dofet['idade_gestacao_faixa'] = [func_categorize_idade_gest(i) for i in df_sim_dofet['SEMAGESTAC']]
 df_sim_dofet['peso_faixa'] = [func_categorize_peso(i) for i in df_sim_dofet['PESO']]
 
-df_sim_dofet.to_csv('base_sim_dofet_suja.csv', index=False)
+df_sim_dofet = df_sim_dofet[
+    [
+    'data_obito'
+    , 'ano_obito'
+    , 'TIPOBITO'
+    , 'ocor_MUNNOMEX'
+    , 'res_MUNNOMEX'
+    , 'ocor_CAPITAL'
+    , 'res_CAPITAL'
+    , 'ocor_REGIAO'
+    , 'res_REGIAO'
+    , 'IDADEMAE'
+    , 'idademae_faixa'
+    , 'ESCMAE2010'
+    , 'escolaridade_mae'
+    , 'OBITOGRAV'
+    , 'GRAVIDEZ'
+    , 'tipo_gravidez'
+    , 'SEMAGESTAC'
+    , 'idade_gestacao_faixa'
+    , 'SEXO'
+    , 'def_sexo'
+    , 'PESO'
+    , 'peso_faixa'
+    , 'OBITOPARTO'
+    , 'def_obito_parto'
+    , 'CAUSABAS'
+    , 'causabas_capitulo'
+    , 'causabas_categoria'
+    , 'causabas_grupo'
+    , 'causabas_subcategoria'
+    , 'FLAG_BASE'
+    ]
+]
+
+df_sim_dofet.to_csv('base_suja/base_sim_dofet_suja.csv', index=False)
 
 
 
