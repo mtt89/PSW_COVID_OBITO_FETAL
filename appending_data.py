@@ -33,6 +33,7 @@ variaveis = colunas= [
     #, 'ESCMAE'
     #, 'def_escol_mae'
     , 'ESCMAE2010'
+    , 'OBITOGRAV'
     , 'GRAVIDEZ'
     #, 'def_gravidez'
     #, 'GESTACAO'
