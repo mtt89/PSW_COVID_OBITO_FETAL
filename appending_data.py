@@ -59,6 +59,8 @@ df_sim_dofet['tipo_gravidez'] = [func_categorize_gravidez(i) for i in df_sim_dof
 df_sim_dofet['idade_gestacao_faixa'] = [func_categorize_idade_gest(i) for i in df_sim_dofet['SEMAGESTAC']]
 df_sim_dofet['peso_faixa'] = [func_categorize_peso(i) for i in df_sim_dofet['PESO']]
 
+df_sim_dofet.to_csv('base_sim_dofet_suja.csv', index=False)
+
 
 
 
