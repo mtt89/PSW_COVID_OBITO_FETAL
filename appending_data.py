@@ -1,5 +1,5 @@
 import pandas as pd
-from Funcoes_auxiliares.func_aux import func_apend_data
+from Funcoes_auxiliares.func_aux import *
 
 """
 --------------------------------- Due to the volume it may take some time ----------------------------------------------
@@ -31,7 +31,7 @@ variaveis = colunas= [
     , 'res_REGIAO'
     , 'IDADEMAE'
     , 'ESCMAE'
-    , 'def_escol_mae'
+    #, 'def_escol_mae'
     , 'ESCMAE2010'
     , 'GRAVIDEZ'
     , 'def_gravidez'
@@ -49,5 +49,17 @@ variaveis = colunas= [
     , 'causabas_grupo'
     , 'causabas_subcategoria'
     ]
-df_sim_dofet = func_apend_data(path=caminho, column=)
+
+df_sim_dofet = func_apend_data(path=caminho, column=variaveis)
+df_sim_dofet['FLAG_BASE'] = 'SIM_DOFET'
+df_sim_dofet['idademae_faixa'] = [func_categorize_idademae(i) for i in df_sim_dofet['IDADEMAE']]
+df_sim_dofet['escolaridade_mae'] = [func_categorize_escolmae(i) for i in df_sim_dofet['ESCMAE2010']]
+df_sim_dofet['tipo_gravidez'] = [func_categorize_gravidez(i) for i in df_sim_dofet['GRAVIDEZ']]
+df_sim_dofet['idade_gestacao_faixa'] = [func_categorize_idade_gest(i) for i in df_sim_dofet['SEMAGESTAC']]
+
+df_sim_dofet['peso_faixa'] = [func_categorize_peso(i) for i in df_sim_dofet['PESO']]
+
+
+
+
 
