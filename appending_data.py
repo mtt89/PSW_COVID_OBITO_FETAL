@@ -19,7 +19,7 @@ Obs:
 
 #------------------------------------------------- SIM_DOFET -----------------------------------------------------------
 caminho = 'C:/Users/gabri/Documents/PSW_COVID_OBITO_FETAL/SIM_DOFET'
-variaveis = colunas= [
+variaveis = [
     'data_obito'
     , 'ano_obito'
     , 'TIPOBITO'
@@ -98,7 +98,7 @@ df_sim_dofet.to_csv('base_suja/base_sim_dofet_suja.csv', index=False)
 
 #------------------------------------------------ SINASC ---------------------------------------------------------------
 caminho = 'C:/Users/gabri/Documents/PSW_COVID_OBITO_FETAL/SINASC'
-variaveis = colunas= [
+variaveis = [
     'data_nasc'
     , 'ano_nasc'
    # , 'TIPOBITO' # Inserir
@@ -176,6 +176,25 @@ df_sinasc = df_sinasc[
 df_sinasc.to_csv('base_suja/base_sinasc_suja.csv', index=False)
 
 #----------------------------------------------- CNES ------------------------------------------------------------------
-
 caminho = 'C:/Users/gabri/Documents/PSW_COVID_OBITO_FETAL/CNES'
+variaveis = [
+    'mun_MUNNOME'
+    , 'uf_SIGLA_UF'
+    , 'ano_competen'
+    , 'mes_competen'
+    , 'CENTROBS'
+    , 'QTINST34'
+    , 'QTINST35'
+    , 'QTINST36'
+    , 'QTINST37'
+    , 'QTLEIT34'
+    , 'QTLEIT38'
+    , 'QTLEIT39'
+    , 'QTLEIT40'
+    , 'CENTRNEO'
+]
+
+df_sinasc = func_apend_data(path=caminho, column=variaveis)
+
+# Remover duplicadas
 
