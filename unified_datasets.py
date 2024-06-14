@@ -26,6 +26,8 @@ df_sinasc = df_sinasc.rename(
 )
 
 df_unificada = pd.concat([df_sim, df_sinasc])
+df_unificada.reset_index(drop=True)
 del df_sim, df_sinasc
 
 # Merge CNES
+df_unificada['mes_evento']=[int(i) for i in df_unificada['data_evento']]
