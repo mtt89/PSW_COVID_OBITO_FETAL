@@ -33,8 +33,10 @@ del df_sim, df_sinasc
 df_unificada['mes_evento'] = [int(i.split('-')[1]) for i in df_unificada['data_evento']]
 df_cnes = pd.read_csv('base_suja/base_cnes_suja.csv')
 
-df_unificada = df_unificada.merge(
+df_saida = df_unificada.merge(
     df_cnes
     , how='left'
     , left_on=['res_MUNNOMEX', 'ano_evento', 'mes_evento', 'res_SIGLA_UF']
     , right_on=['mun_MUNNOMEX', 'ano', 'mes', 'res_SIGLA_UF'])
+
+df_saida.to_csv('base_suja/base_unificada_suja.csv', index=False)
