@@ -78,12 +78,12 @@ def func_categorize_idade_gest(semana):
         return "Ignorado"
 
 def func_limpar_string(texto):
-    # Remove acentuação
+    # Remove accentuation
     texto = unicodedata.normalize('NFKD', texto).encode('ASCII', 'ignore').decode('ASCII')
-    # Remove caracteres especiais e pontuação, exceto o traço
+    # Removes special characters and punctuation except the dash
     texto = re.sub(r'[^a-zA-Z0-9\s-]', '', texto)
-    # Converte para maiúsculas
+    # Convert to uppercase
     texto = texto.upper()
-    # Remove espaços em branco extras
+    # Remove extra whitespace
     texto = re.sub(r'\s+', ' ', texto).strip()
     return texto
