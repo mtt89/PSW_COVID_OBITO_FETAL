@@ -195,15 +195,15 @@ variaveis = [
     , 'CENTRNEO'
 ]
 
-df_sinasc = func_apend_data(path=caminho, column=variaveis)
+df_cnes = func_apend_data(path=caminho, column=variaveis)
 # Limpando o nome do município
-df_sinasc['mun_MUNNOME'] = [func_limpar_string(i) for i in df_sinasc['mun_MUNNOME']]
+df_cnes['mun_MUNNOME'] = [func_limpar_string(i) for i in df_cnes['mun_MUNNOME']]
 
 # Remover duplicadas
-df_sinasc = df_sinasc.drop_duplicates()
+df_cnes = df_cnes.drop_duplicates()
 
 # Agregando a base
-df_sinasc_agreg = df_sinasc.groupby(
+df_cnes_agreg = df_cnes.groupby(
  [
     'mun_MUNNOME'
     , 'uf_SIGLA_UF'
@@ -224,5 +224,6 @@ df_sinasc_agreg = df_sinasc.groupby(
     , sum_CENTRNEO=pd.NamedAgg(column='CENTRNEO', aggfunc='sum')
 )
 
+df_cnes.to_csv('base_suja/base_cnes_suja.csv', index=False)
 
 
