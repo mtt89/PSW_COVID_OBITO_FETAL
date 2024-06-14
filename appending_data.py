@@ -224,6 +224,6 @@ df_cnes_agreg = df_cnes.groupby(
     , sum_CENTRNEO=pd.NamedAgg(column='CENTRNEO', aggfunc='sum')
 )
 
-df_cnes.to_csv('base_suja/base_cnes_suja.csv', index=False)
+df_cnes_agreg.to_csv('base_suja/base_cnes_suja.csv', index=False)
 
 
