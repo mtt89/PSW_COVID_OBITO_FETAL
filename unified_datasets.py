@@ -32,6 +32,7 @@ del df_sim, df_sinasc
 # Merge CNES
 df_unificada['mes_evento'] = [int(i.split('-')[1]) for i in df_unificada['data_evento']]
 df_cnes = pd.read_csv('base_suja/base_cnes_suja.csv')
+# antes do merge preciso tratar os missings nas colunas do join
 
 df_saida = df_unificada.merge(
     df_cnes
