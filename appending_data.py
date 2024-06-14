@@ -195,6 +195,9 @@ variaveis = [
 ]
 
 df_sinasc = func_apend_data(path=caminho, column=variaveis)
+# Limpando o nome do município
+df_sinasc['mun_MUNNOME'] = [func_limpar_string(i) for i in df_sinasc['mun_MUNNOME']]
+
 
 # Remover duplicadas
 
