@@ -36,5 +36,5 @@ df_cnes = pd.read_csv('base_suja/base_cnes_suja.csv')
 df_unificada = df_unificada.merge(
     df_cnes
     , how='left'
-    , left_on=[ 'res_MUNNOMEX', 'ano_evento', 'mes_evento', ]
-    , right_on=[])
+    , left_on=['res_MUNNOMEX', 'ano_evento', 'mes_evento', 'res_SIGLA_UF']
+    , right_on=['mun_MUNNOMEX', 'ano', 'mes', 'res_SIGLA_UF'])

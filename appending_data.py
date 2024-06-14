@@ -183,7 +183,7 @@ df_sinasc.to_csv('base_suja/base_sinasc_suja.csv', index=False)
 caminho = 'C:/Users/gabri/Documents/PSW_COVID_OBITO_FETAL/CNES'
 variaveis = [
     'CNES'
-    , 'mun_MUNNOME'
+    , 'mun_MUNNOMEX'
     , 'uf_SIGLA_UF'
     , 'ano_competen'
     , 'mes_competen'
@@ -201,7 +201,7 @@ variaveis = [
 
 df_cnes = func_apend_data(path=caminho, column=variaveis)
 # Limpando o nome do município
-df_cnes['mun_MUNNOME'] = [func_limpar_string(i) for i in df_cnes['mun_MUNNOME']]
+# df_cnes['mun_MUNNOME'] = [func_limpar_string(i) for i in df_cnes['mun_MUNNOME']]
 
 # Remover duplicadas
 df_cnes = df_cnes.drop_duplicates()
@@ -209,7 +209,7 @@ df_cnes = df_cnes.drop_duplicates()
 # Agregando a base
 df_cnes_agreg = df_cnes.groupby(
  [
-    'mun_MUNNOME'
+    'mun_MUNNOMEX'
     , 'uf_SIGLA_UF'
     , 'ano_competen'
     , 'mes_competen'
