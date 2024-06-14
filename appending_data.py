@@ -178,7 +178,8 @@ df_sinasc.to_csv('base_suja/base_sinasc_suja.csv', index=False)
 #----------------------------------------------- CNES ------------------------------------------------------------------
 caminho = 'C:/Users/gabri/Documents/PSW_COVID_OBITO_FETAL/CNES'
 variaveis = [
-    'mun_MUNNOME'
+    'CNES'
+    , 'mun_MUNNOME'
     , 'uf_SIGLA_UF'
     , 'ano_competen'
     , 'mes_competen'
@@ -198,6 +199,30 @@ df_sinasc = func_apend_data(path=caminho, column=variaveis)
 # Limpando o nome do município
 df_sinasc['mun_MUNNOME'] = [func_limpar_string(i) for i in df_sinasc['mun_MUNNOME']]
 
-
 # Remover duplicadas
+df_sinasc = df_sinasc.drop_duplicates()
+
+# Agregando a base
+df_sinasc_agreg = df_sinasc.groupby(
+ [
+    'mun_MUNNOME'
+    , 'uf_SIGLA_UF'
+    , 'ano_competen'
+    , 'mes_competen'
+ ]
+    , as_index=False
+).agg(
+    sum_CENTROBS=pd.NamedAgg(column='CENTROBS', aggfunc='sum')
+    , sum_QTINST34=pd.NamedAgg(column='QTINST34', aggfunc='sum')
+    , sum_QTINST35=pd.NamedAgg(column='QTINST35', aggfunc='sum')
+    , sum_QTINST36=pd.NamedAgg(column='QTINST36', aggfunc='sum')
+    , sum_QTINST37=pd.NamedAgg(column='QTINST37', aggfunc='sum')
+    , sum_QTLEIT34=pd.NamedAgg(column='QTLEIT34', aggfunc='sum')
+    , sum_QTLEIT38=pd.NamedAgg(column='QTLEIT38', aggfunc='sum')
+    , sum_QTLEIT39=pd.NamedAgg(column='QTLEIT39', aggfunc='sum')
+    , sum_QTLEIT40=pd.NamedAgg(column='QTLEIT40', aggfunc='sum')
+    , sum_CENTRNEO=pd.NamedAgg(column='CENTRNEO', aggfunc='sum')
+)
+
+
 
