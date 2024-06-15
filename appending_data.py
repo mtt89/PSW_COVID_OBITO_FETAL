@@ -183,6 +183,8 @@ df_sinasc.to_csv('base_suja/base_sinasc_suja.csv', index=False)
 caminho = 'C:/Users/gabri/Documents/PSW_COVID_OBITO_FETAL/CNES'
 variaveis = [
     'CNES'
+    , 'TP_UNID'
+    , 'def_tp_unid'
     , 'mun_MUNNOMEX'
     , 'uf_SIGLA_UF'
     , 'ano_competen'
@@ -200,12 +202,18 @@ variaveis = [
 ]
 
 df_cnes = func_apend_data(path=caminho, column=variaveis)
-# Limpando o nome do município
-# df_cnes['mun_MUNNOME'] = [func_limpar_string(i) for i in df_cnes['mun_MUNNOME']]
-
 # Remover duplicadas
 df_cnes = df_cnes.drop_duplicates()
 
+# Separando o dicionário da variável TP_UNID
+df_tp_unid = df_cnes[['TP_UNID', 'def_tp_unid']].drop_duplicates()
+df_tp_unid.to_csv('dicionario_tp_unid_cnes.csv', index=False)
+
+# Vericando missings nas variáveis de agregação
+df_cnes['mun_MUNNOMEX'].isnull().sum()
+df_cnes['uf_SIGLA_UF'].isnull().sum()
+df_cnes['ano_competen'].isnull().sum()
+df_cnes['mes_competen'].isnull().sum()
 # Agregando a base
 df_cnes_agreg = df_cnes.groupby(
  [
@@ -228,6 +236,36 @@ df_cnes_agreg = df_cnes.groupby(
     , sum_CENTRNEO=pd.NamedAgg(column='CENTRNEO', aggfunc='sum')
 )
 
+# Inserindo as dummies
+df_cnes_pivot = df_cnes[
+    [
+        'mun_MUNNOMEX'
+        , 'uf_SIGLA_UF'
+        , 'ano_competen'
+        , 'mes_competen'
+        , 'TP_UNID'
+    ]
+]
+
+# Pivot table usando dummies para contar ocorrências de TP_UNID
+df_cnes_pivot = pd.pivot_table(df_cnes_pivot,
+                             index=['mun_MUNNOMEX', 'uf_SIGLA_UF', 'ano_competen', 'mes_competen'],
+                             columns='TP_UNID',
+                             aggfunc='size',
+                             fill_value=0).reset_index()
+
+df_cnes_pivot.columns.name = None  # Remove o nome da coluna do índice
+df_cnes_pivot.columns = ['TP_UNID_' + str(col) for col in df_cnes_pivot.columns]
+
+
+
+df_cnes_agreg = df_cnes_agreg.merge(
+    df_cnes_pivot
+    , how='left'
+    , left_on=['mun_MUNNOMEX', 'uf_SIGLA_UF', 'ano_competen', 'mes_competen']
+    , right_on=['TP_UNID_mun_MUNNOMEX', 'TP_UNID_uf_SIGLA_UF', 'TP_UNID_ano_competen', 'TP_UNID_mes_competen']
+)
+df_cnes_agreg = df_cnes_agreg.drop(columns=['TP_UNID_mun_MUNNOMEX', 'TP_UNID_uf_SIGLA_UF', 'TP_UNID_ano_competen', 'TP_UNID_mes_competen'])
 df_cnes_agreg.to_csv('base_suja/base_cnes_suja.csv', index=False)
 
 
