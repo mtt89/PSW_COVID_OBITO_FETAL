@@ -50,3 +50,4 @@ df_saida = df_unificada.merge(
 )
 
 df_saida.to_csv('base_suja/base_unificada_suja.csv', index=False)
+
