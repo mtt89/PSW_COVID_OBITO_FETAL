@@ -12,6 +12,7 @@ df_sim = df_sim.rename(
         , 'ocor_MUNNOMEX': 'evento_MUNNOMEX'
         , 'ocor_CAPITAL': 'evento_CAPITAL'
         , 'ocor_REGIAO': 'evento_REGIAO'
+        , 'ocor_SIGLA_UF': 'evento_SIGLA_UF'
     }
 )
 
@@ -22,6 +23,7 @@ df_sinasc = df_sinasc.rename(
         , 'nasc_MUNNOMEX': 'evento_MUNNOMEX'
         , 'nasc_CAPITAL': 'evento_CAPITAL'
         , 'nasc_REGIAO': 'evento_REGIAO'
+        , 'nasc_SIGLA_UF': 'evento_SIGLA_UF'
     }
 )
 
@@ -32,7 +34,13 @@ del df_sim, df_sinasc
 # Merge CNES
 df_unificada['mes_evento'] = [int(i.split('-')[1]) for i in df_unificada['data_evento']]
 df_cnes = pd.read_csv('base_suja/base_cnes_suja.csv')
+
 # antes do merge preciso tratar os missings nas colunas do join
+# Vericando missings nas variáveis do merge
+df_unificada['res_MUNNOMEX'].isnull().sum()
+df_unificada['res_SIGLA_UF'].isnull().sum()
+df_unificada['ano_evento'].isnull().sum()
+df_unificada['mes_evento'].isnull().sum()
 
 df_saida = df_unificada.merge(
     df_cnes

@@ -112,6 +112,8 @@ variaveis = [
     , 'res_CAPITAL'
     , 'nasc_REGIAO'
     , 'res_REGIAO'
+    , 'nasc_SIGLA_UF'
+    , 'res_SIGLA_UF'
     , 'IDADEMAE'
     #, 'ESCMAE'
     #, 'def_escol_mae'
@@ -153,6 +155,8 @@ df_sinasc = df_sinasc[
     , 'res_CAPITAL'
     , 'nasc_REGIAO'
     , 'res_REGIAO'
+    , 'nasc_SIGLA_UF'
+    , 'res_SIGLA_UF'
     , 'IDADEMAE'
     , 'idademae_faixa'
     , 'ESCMAE2010'
@@ -236,7 +240,7 @@ df_cnes_agreg = df_cnes.groupby(
     , sum_CENTRNEO=pd.NamedAgg(column='CENTRNEO', aggfunc='sum')
 )
 
-# Inserindo as dummies
+# Pivot table usando dummies para contar ocorrências de TP_UNID
 df_cnes_pivot = df_cnes[
     [
         'mun_MUNNOMEX'
@@ -247,7 +251,6 @@ df_cnes_pivot = df_cnes[
     ]
 ]
 
-# Pivot table usando dummies para contar ocorrências de TP_UNID
 df_cnes_pivot = pd.pivot_table(df_cnes_pivot,
                              index=['mun_MUNNOMEX', 'uf_SIGLA_UF', 'ano_competen', 'mes_competen'],
                              columns='TP_UNID',
@@ -257,15 +260,14 @@ df_cnes_pivot = pd.pivot_table(df_cnes_pivot,
 df_cnes_pivot.columns.name = None  # Remove o nome da coluna do índice
 df_cnes_pivot.columns = ['TP_UNID_' + str(col) for col in df_cnes_pivot.columns]
 
-
-
 df_cnes_agreg = df_cnes_agreg.merge(
     df_cnes_pivot
     , how='left'
     , left_on=['mun_MUNNOMEX', 'uf_SIGLA_UF', 'ano_competen', 'mes_competen']
     , right_on=['TP_UNID_mun_MUNNOMEX', 'TP_UNID_uf_SIGLA_UF', 'TP_UNID_ano_competen', 'TP_UNID_mes_competen']
 )
-df_cnes_agreg = df_cnes_agreg.drop(columns=['TP_UNID_mun_MUNNOMEX', 'TP_UNID_uf_SIGLA_UF', 'TP_UNID_ano_competen', 'TP_UNID_mes_competen'])
+df_cnes_agreg = df_cnes_agreg.drop(columns=['TP_UNID_mun_MUNNOMEX', 'TP_UNID_uf_SIGLA_UF', 'TP_UNID_ano_competen'
+    , 'TP_UNID_mes_competen'])
 df_cnes_agreg.to_csv('base_suja/base_cnes_suja.csv', index=False)
 
 
