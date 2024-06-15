@@ -48,7 +48,7 @@ df_saida = df_unificada.merge(
     , left_on=['res_MUNNOMEX', 'ano_evento', 'mes_evento', 'res_SIGLA_UF']
     , right_on=['mun_MUNNOMEX', 'ano_competen', 'mes_competen', 'uf_SIGLA_UF']
 )
-del df_unificada, df_cnes,
+del df_unificada, df_cnes
 
 df_saida = df_saida.drop(columns=[['mun_MUNNOMEX', 'ano_competen', 'mes_competen', 'uf_SIGLA_UF', 'mes_evento']])
 
