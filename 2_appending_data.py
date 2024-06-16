@@ -13,7 +13,7 @@ PCDAS.function_import_sinasc(path_download=path_, year=year)
 PCDAS.function_import_cnes(path_download=path_, year=year)
 
 Obs: 
- Another option is to download the data manually, for this see the file 'manual_download_data.py'
+ Another option is to download the data manually, for this see the file '1_manual_download_data.py'
 ------------------------------------------------------------------------------------------------------------------------
 """
 
