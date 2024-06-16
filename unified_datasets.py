@@ -50,7 +50,7 @@ df_saida = df_unificada.merge(
 )
 del df_unificada, df_cnes
 
-df_saida = df_saida.drop(columns=[['mun_MUNNOMEX', 'ano_competen', 'mes_competen', 'uf_SIGLA_UF', 'mes_evento']])
+df_saida = df_saida.drop(columns=['mun_MUNNOMEX', 'ano_competen', 'mes_competen', 'uf_SIGLA_UF', 'mes_evento'])
 
 df_saida.to_csv('base_suja/base_unificada_suja.csv', index=False)
 
