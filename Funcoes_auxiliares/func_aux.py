@@ -87,3 +87,15 @@ def func_limpar_string(texto):
     # Remove extra whitespace
     texto = re.sub(r'\s+', ' ', texto).strip()
     return texto
+
+def func_categoriza_var_cnes(qtd: float):
+    if qtd == 0:
+        return 'nenhuma'
+    elif 1 <= qtd <= 20:
+        return 'entre_1_e_20'
+    elif 21 <= qtd <= 40:
+        return 'entre_21_e_40'
+    elif 41 <= qtd <= 60:
+        return 'entre_41_e_60'
+    else:
+        return 'mais_que_60'
