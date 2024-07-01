@@ -12,3 +12,5 @@ df <- read.dbc(file_path)
 head(df)
 
 length(df)
+
+write.csv2(df, 'C:\\Users\\gabri\\Documents\\PSW_COVID_OBITO_FETAL\\SIM_DOFET\\SIM_DOFET_2022_sujo.csv')
