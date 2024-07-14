@@ -1668,8 +1668,10 @@ from sklearn.linear_model import LogisticRegression
 import statsmodels.api as sm
 from scipy import stats
 import seaborn as sns
+import matplotlib
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
-#plt.style.use("ggplot")
+plt.style.use("ggplot")
 #from google.colab import drive
 from pandas.testing import assert_frame_equal
 from statsmodels.stats.outliers_influence import variance_inflation_factor
@@ -1919,11 +1921,11 @@ with open(f'resultados/modelo_2_teste/{periodo}_modelo_6_teste_OBITO.txt', 'w') 
 odds_ratio['periodo'] = periodo
 odds_ratio.to_csv(f'resultados/modelo_2_teste/{periodo}_modelo_6_teste_OBITO.csv', decimal=',', sep=';', index=False)
 
-# fig = sns.kdeplot(df_mod.query("ANO==0")["PROPENSITY_SCORE"],bw_adjust=.7, shade=False, color="r")
-# fig = sns.kdeplot(df_mod.query("ANO==1")["PROPENSITY_SCORE"],bw_adjust=.7, shade=False, color="b")
-# plt.legend(['Control','Treatment'])
-# # plt.savefig(f'resultados/modelo_2_teste/fig1a_{periodo}_modelo_2_teste_OBITO.png', format='png', dpi=300)
-# plt.show()
+fig = sns.kdeplot(df_mod.query("ANO==0")["PROPENSITY_SCORE"],bw_adjust=.7, shade=False, color="r")
+fig = sns.kdeplot(df_mod.query("ANO==1")["PROPENSITY_SCORE"],bw_adjust=.7, shade=False, color="b")
+plt.legend(['Control','Treatment'])
+plt.savefig(f'resultados/modelo_2_teste/fig1a_{periodo}_modelo_2_teste_OBITO.png', format='png', dpi=300)
+plt.show()
 #
 # fig = sns.kdeplot(psw_base.query("ANO==0")["PROPENSITY_SCORE"],bw_adjust=0.7, shade=False, color="r")
 # fig = sns.kdeplot(psw_base.query("ANO==1")["PROPENSITY_SCORE"],bw_adjust=0.7, shade=False, color="b")
@@ -1932,14 +1934,15 @@ odds_ratio.to_csv(f'resultados/modelo_2_teste/{periodo}_modelo_6_teste_OBITO.csv
 # plt.show()
 #
 # #spearm
-# var_corr = ['FLAG_BASE_SIM_DOFET'] + var_model_2
-#
-# plt.figure(figsize=(16, 6))
-# # define the mask to set the values in the upper triangle to True
-#
-# mask = np.triu(np.ones_like(psw_base[var_corr].corr(method="spearman"), dtype=np.bool))
-# heatmap = sns.heatmap(psw_base[var_corr].corr(method='spearman'), mask=mask, vmin=-1, vmax=1, annot=True, cmap='BrBG')
-# heatmap.set_title('Matrix', fontdict={'fontsize':18}, pad=16);
+var_corr = ['FLAG_BASE_SIM_DOFET'] + var_model_2
+
+plt.figure(figsize=(16, 6))
+# define the mask to set the values in the upper triangle to True
+
+mask = np.triu(np.ones_like(psw_base[var_corr].corr(method="spearman"), dtype=bool))
+heatmap = sns.heatmap(psw_base[var_corr].corr(method='spearman'), mask=mask, vmin=-1, vmax=1, annot=True, cmap='BrBG')
+heatmap.set_title('Matrix', fontdict={'fontsize':18}, pad=16)
+plt.show()
 ########################################################################################################################
 ########################################################################################################################
 ########################################################################################################################
@@ -2164,7 +2167,7 @@ X_balanced = psw_base_balanced[aux + var_model_2].values
 y_balanced = psw_base_balanced[['FLAG_BASE_SIM_DOFET']].values
 
 X_ANO = sm.add_constant(X_balanced)
-clf_ano = sm.Logit(y_balanced, X_ANO, weights=weights_balanced).fit(maxiter=1000)
+clf_ano = sm.Logit(y_balanced, X_ANO, weights=weights_balanced).fit(maxiter=10000)
 
 aux=['Intercept','ANO']
 
