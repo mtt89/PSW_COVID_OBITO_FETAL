@@ -23,8 +23,8 @@ from sklearn.metrics import classification_report, confusion_matrix
 import time
 warnings.filterwarnings("ignore")
 
-# df = pd.read_csv('base_limpa/base_unificada_limpa_remocao.csv')
-df = pd.read_csv('base_limpa/base_unificada_limpa_com_input.csv')
+df = pd.read_csv('base_limpa/base_unificada_limpa_remocao.csv')
+# df = pd.read_csv('base_limpa/base_unificada_limpa_com_input.csv')
 # Peso calculado
 df['cat_peso_calc'] = [
     func_peso_calculado(sexo, peso, int(round(semana_gest,0))) for sexo, peso, semana_gest in zip(df['SEXO'], df['PESO'], df['SEMAGESTAC'])
@@ -47,7 +47,7 @@ lista_periodo = [
 
 # Exemplos de uso
 for periodo in lista_periodo:
-    missing = 'missing_com_input' #'missing_com_input'
+    missing = 'missing_removido' #'missing_com_input'
     df_ano = filtrar_e_adicionar(df, periodo)
     df_ano['ano_evento'].value_counts()
     df_ano['cat_peso_calc'].value_counts()
