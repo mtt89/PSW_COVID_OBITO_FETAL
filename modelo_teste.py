@@ -2233,3 +2233,158 @@ odds_ratio.to_csv(f'resultados/modelo_2_teste/{periodo}_modelo_7_teste_OBITO.csv
 # mask = np.triu(np.ones_like(psw_base[var_corr].corr(method="spearman"), dtype=np.bool))
 # heatmap = sns.heatmap(psw_base[var_corr].corr(method='spearman'), mask=mask, vmin=-1, vmax=1, annot=True, cmap='BrBG')
 # heatmap.set_title('Matrix', fontdict={'fontsize':18}, pad=16);
+
+
+print("""
+   Modelo 2
+   Missing: Removido
+   balanceamento: Após o modelo 1
+   Tipo de Balancemaneto: AAS undersampling
+   """)
+df_mod = df_ano[variaveis_1]
+# Dummies
+df_mod = pd.get_dummies(df_mod)
+
+# OBITO contagem
+NPT = (df_mod['FLAG_BASE_SIM_DOFET'] == 1).sum()
+NT = (df_mod['FLAG_BASE_SIM_DOFET'] == 0).sum()
+
+# Primeiro modelo
+# Defining covariates
+X = df_mod[var_model].values
+
+## FIRST REGRESSION
+y = df_mod[['ANO']].values
+clf = LogisticRegression(random_state=0, max_iter=2000).fit(X, y)
+df_mod = df_mod.assign(PROPENSITY_SCORE=clf.predict_proba(X)[:, 1])
+
+# USING PROPENSITY SCORE TO SELECT SAMPLES TO SECOND REGRESSION
+psw_base = df_mod[((df_mod['PROPENSITY_SCORE'] > df_mod['PROPENSITY_SCORE'].quantile(0.1)) &
+                   (df_mod['PROPENSITY_SCORE'] < df_mod['PROPENSITY_SCORE'].quantile(0.9)))]
+
+# COUNTING
+po = len(df_mod)
+tpo = len(df_mod[df_mod['ANO'] == 1])
+cpo = len(df_mod[df_mod['ANO'] == 0])
+pa = len(psw_base)
+tpa = len(psw_base[psw_base['ANO'] == 1])
+cpa = len(psw_base[psw_base['ANO'] == 0])
+
+print('----------------------------------------------------------------')
+print('USING PROPENSITY SCORE TO SELECT/MATCH SAMPLES')
+print('----------------------------------------------------------------')
+print('N without missing  :', po)
+print('Treated samples    :', tpo, np.round(100 * tpo / po, 2), '%')
+print('Controled samples  :', cpo, np.round(100 * cpo / po, 2), '%')
+print('----------------------------------------------------------------')
+print('SELECTED/MATCHET SAMPLES')
+print('----------------------------------------------------------------')
+print('% Selected         :', np.round(100 * pa / po, 2), '%')
+print('N selected         :', pa)
+print('Treated selected   :', tpa, np.round(100 * tpa / pa, 2), '%')
+print('Controled selected :', cpa, np.round(100 * cpa / pa, 2), '%')
+print('----------------------------------------------------------------')
+print('')
+
+## SECOND REGRESSION
+aux = ['ANO']
+psw_base['weights'] = psw_base['ANO'] / psw_base['PROPENSITY_SCORE'] + (
+            (1 - psw_base['ANO']) / (1 - psw_base['PROPENSITY_SCORE']))
+X = psw_base[aux + var_model].astype(float).values
+y = psw_base[['FLAG_BASE_SIM_DOFET']].values
+weights = psw_base['weights'].values
+
+# Aplicando Random UnderSampling para que a classe majoritária seja 50% maior que a minoritária
+# sampling_strategy = 1 / 1.5  # Aproximadamente 0.769
+rus = RandomUnderSampler(random_state=42)
+X_res, y_res = rus.fit_resample(X, y)
+
+# Criando um DataFrame da base balanceada
+psw_base_balanced = pd.DataFrame(X_res, columns=aux + var_model)
+psw_base_balanced['FLAG_BASE_SIM_DOFET'] = y_res
+
+# Encontrando os índices das observações selecionadas
+selected_indices = rus.sample_indices_
+
+# Aplicando os pesos corretos às observações selecionadas
+weights_balanced = weights[selected_indices]
+psw_base_balanced['PROPENSITY_SCORE'] = psw_base['PROPENSITY_SCORE'].values[selected_indices]
+
+# Treinando o modelo final
+X_balanced = psw_base_balanced[aux + var_model].values
+y_balanced = psw_base_balanced[['FLAG_BASE_SIM_DOFET']].values
+
+X_ANO = sm.add_constant(X_balanced)
+clf_ano = sm.Logit(y_balanced, X_ANO, weights=weights_balanced).fit(maxiter=1000)
+
+aux = ['Intercept', 'ANO']
+
+print('----------------------------------------------------------------')
+print('PSW REPORT', periodo)
+print('----------------------------------------------------------------')
+print(clf_ano.summary(xname=aux + var_model))
+print('----------------------------------------------------------------')
+
+IC = np.exp(clf_ano.conf_int(0.05))
+odds_ratio = pd.DataFrame(
+    data={
+        'Var': aux + var_model
+        , 'Odds_ratio': np.round(np.exp(clf_ano.params), 3)
+        , 'Odds_Lim_inf': np.round(IC[:, 0], 3)
+        , 'Odds_Lim_Sup': np.round(IC[:, 1], 3)
+        , 'p-values': np.round(clf_ano.pvalues, 3)
+    }
+)
+print(tabulate(odds_ratio, headers='keys', tablefmt='grid'))
+
+with open(f'resultados/modelo_2_V1/{periodo}_modelo2_{missing}_OBITO.txt', 'w') as f:
+    f.write('---------------------------------------------------------------- \n')
+    f.write('USING PROPENSITY SCORE TO SELECT/MATCH SAMPLES \n')
+    f.write('----------------------------------------------------------------\n')
+    f.write('N without missing  :' + str(po) + '\n')
+    f.write('Treated samples    :' + str([tpo, np.round(100 * tpo / po, 2)]) + '% \n')
+    f.write('Controled samples  :' + str([cpo, np.round(100 * cpo / po, 2)]) + '% \n')
+    f.write('---------------------------------------------------------------- \n')
+    f.write('SELECTED/MATCHET SAMPLES\n')
+    f.write('---------------------------------------------------------------- \n')
+    f.write('% Selected         :' + str(np.round(100 * pa / po, 2)) + '% \n')
+    f.write('N selected         :' + str(pa) + '\n')
+    f.write('Treated selected   :' + str([tpa, np.round(100 * tpa / pa, 2)]) + '% \n')
+    f.write('Controled selected :' + str([cpa, np.round(100 * cpa / pa, 2)]) + '% \n')
+    f.write('---------------------------------------------------------------- \n')
+    f.write('PSW REPORT - ' + periodo + '\n')
+    f.write(str(clf_ano.summary(xname=aux + var_model)))
+    f.write('\n')
+    f.write(tabulate(odds_ratio, headers='keys', tablefmt='grid'))
+
+odds_ratio['periodo'] = periodo
+odds_ratio['modelo'] = f'modelo2_{missing}'
+odds_ratio.to_csv(f'resultados/modelo_2_V1/{periodo}_modelo2_{missing}_OBITO.csv', decimal=',', sep=';', index=False)
+
+fig = sns.kdeplot(df_mod.query("ANO==0")["PROPENSITY_SCORE"], bw_adjust=.7, shade=False, color="r")
+fig = sns.kdeplot(df_mod.query("ANO==1")["PROPENSITY_SCORE"], bw_adjust=.7, shade=False, color="b")
+plt.legend(['Control', 'Treatment'])
+plt.savefig(f'resultados/modelo_2_V1/fig1a_{periodo}_modelo2_{missing}_OBITO.png', format='png', dpi=300)
+plt.clf()
+# plt.show()
+#
+fig = sns.kdeplot(psw_base_balanced.query("ANO==0")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False, color="r")
+fig = sns.kdeplot(psw_base_balanced.query("ANO==1")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False, color="b")
+plt.legend(['Control', 'Treatment'])
+plt.savefig(f'resultados/modelo_2_V1/fig1b_{periodo}_modelo2_{missing}_OBITO.png', format='png', dpi=300)
+plt.clf()
+# plt.show()
+#
+# #spearm
+var_corr = ['FLAG_BASE_SIM_DOFET'] + var_model
+
+plt.figure(figsize=(16, 6))
+# define the mask to set the values in the upper triangle to True
+
+mask = np.triu(np.ones_like(psw_base_balanced[var_corr].corr(method="spearman"), dtype=bool))
+heatmap = sns.heatmap(psw_base_balanced[var_corr].corr(method='spearman'), mask=mask, vmin=-1, vmax=1, annot=True,
+                      cmap='BrBG')
+heatmap.set_title('Matrix', fontdict={'fontsize': 18}, pad=16)
+plt.savefig(f'resultados/modelo_2_V1/graf_corr_{periodo}_modelo2_{missing}_OBITO.png', format='png', dpi=300)
+plt.clf()
+# plt.show()
