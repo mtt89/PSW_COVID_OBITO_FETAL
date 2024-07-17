@@ -30,6 +30,8 @@ df['cat_peso_calc'] = [
     func_peso_calculado(sexo, peso, int(round(semana_gest,0))) for sexo, peso, semana_gest in zip(df['SEXO'], df['PESO'], df['SEMAGESTAC'])
 ]
 
+df['cat_peso_calc'].value_counts()
+
 aa = df.value_counts(['SEXO', 'def_sexo'])
 
 # Função para filtrar o dataframe e adicionar a coluna 'ANO'
