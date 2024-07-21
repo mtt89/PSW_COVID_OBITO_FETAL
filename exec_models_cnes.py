@@ -79,9 +79,9 @@ df['cat_peso_calc'] = [
     func_peso_calculado(sexo, peso, int(round(semana_gest,0))) for sexo, peso, semana_gest in zip(df['SEXO'], df['PESO'], df['SEMAGESTAC'])
 ]
 
-df['cat_peso_calc'].value_counts()
+# df['cat_peso_calc'].value_counts()
 
-aa = df.value_counts(['SEXO', 'def_sexo'])
+# aa = df.value_counts(['SEXO', 'def_sexo'])
 
 # Função para filtrar o dataframe e adicionar a coluna 'ANO'
 def filtrar_e_adicionar(df, per):
@@ -115,13 +115,14 @@ for periodo in lista_periodo:
         , 'peso_faixa'
         , 'cat_peso_calc'
         , 'FLAG_BASE'
-        ,
+        , 'cat_QTINST'
+        , 'cat_QTLEIT'
+        , 'cat_QT_TP_UNID'
         ]
     df_mod = df_ano[variaveis_1]
 
     # Dummies
     df_mod = pd.get_dummies(df_mod)
-
     # OBITO contagem
     NPT = (df_mod['FLAG_BASE_SIM_DOFET']==1).sum()
     NT = (df_mod['FLAG_BASE_SIM_DOFET']==0).sum()
@@ -154,20 +155,18 @@ for periodo in lista_periodo:
         #, 'peso_faixa_entre_500_1499'
         #, 'peso_faixa_maior_igual_4000'
         #, 'peso_faixa_menor_500'
-        #,'cat_CENTROBS'
-        , 'cat_QTINST34'
-        ,'cat_QTINST35'
-        ,'cat_QTINST36'
-        , 'cat_QTINST37'
-        , 'cat_QTLEIT34'
-        , 'cat_QTLEIT38'
-        , 'cat_QTLEIT39'
-        , 'cat_QTLEIT40'
-        , 'cat_CENTRNEO'
-        , 'cat_TP_UNID_5'
-        , 'cat_TP_UNID_7'
-        , 'cat_TP_UNID_15'
-        , 'cat_TP_UNID_36'
+        # , 'cat_QTINST_entre_15_50'
+        # , 'cat_QTINST_entre_1_15'
+        # , 'cat_QTINST_maior_50'
+        # , 'cat_QTINST_zero'
+        , 'cat_QTLEIT_entre_15_50'
+        , 'cat_QTLEIT_entre_1_15'
+        # , 'cat_QTLEIT_maior_50'
+        , 'cat_QTLEIT_zero'
+        # , 'cat_QT_TP_UNID_entre_15_50'
+        # , 'cat_QT_TP_UNID_entre_1_15'
+        # , 'cat_QT_TP_UNID_maior_50'
+        # , 'cat_QT_TP_UNID_zero'
     ]
 
 ########################################################################################################################
