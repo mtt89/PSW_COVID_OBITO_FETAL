@@ -37,15 +37,15 @@ df_cnes = pd.read_csv('base_suja/base_cnes_suja.csv')
 
 # antes do merge preciso tratar os missings nas colunas do join
 # Vericando missings nas variáveis do merge
-df_unificada['res_MUNNOMEX'].isnull().sum()
-df_unificada['res_SIGLA_UF'].isnull().sum()
+df_unificada['evento_MUNNOMEX'].isnull().sum()
+df_unificada['evento_SIGLA_UF'].isnull().sum()
 df_unificada['ano_evento'].isnull().sum()
 df_unificada['mes_evento'].isnull().sum()
 
 df_saida = df_unificada.merge(
     df_cnes
     , how='left'
-    , left_on=['res_MUNNOMEX', 'ano_evento', 'mes_evento', 'res_SIGLA_UF']
+    , left_on=['evento_MUNNOMEX', 'ano_evento', 'mes_evento', 'evento_SIGLA_UF']
     , right_on=['mun_MUNNOMEX', 'ano_competen', 'mes_competen', 'uf_SIGLA_UF']
 )
 del df_unificada, df_cnes
