@@ -48,21 +48,30 @@ df['cat_QTINST'] = [func_leitos(qtd=i) for i in df['QTINST']]
 df['cat_QTLEIT'] = [func_leitos(qtd=i) for i in df['QTLEIT']]
 df['cat_QT_TP_UNID'] = [func_leitos(qtd=i) for i in df['QT_TP_UNID']]
 
-# Pop fem censo 2022
-base_pop = pd.read_csv('./pop_fem_2022/pop_fem_censo_2022_ibge.csv', encoding='ISO-8859-1', sep = ';')
-base_pop['municipio_sep'] = [i.split('(')[0] for i in base_pop['municipio']]
-base_pop['UF'] = [i.split('(')[1].replace(')', '') for i in base_pop['municipio']]
-
-base_pop['municipio_limpo'] = [func_limpar_string(i).replace("'", "").replace("-", " ") for i in base_pop['municipio_sep']]
-
-junta = base_pop[['municipio_limpo', 'UF', 'Pop_feminina_entre_10_50_anos_censo_2022']]
-
-df['evento_MUNNOMEX_limpo'] = [i.replace("'", '').replace("-", " ") for i in df['evento_MUNNOMEX']]
-df = df.merge(junta, how='left', left_on=['evento_MUNNOMEX_limpo', 'evento_SIGLA_UF'], right_on=['municipio_limpo', 'UF'])
-
-aa=df[df['Pop_feminina_entre_10_50_anos_censo_2022'].isnull()]
-
-pd.unique(aa['evento_MUNNOMEX'])
+# # Pop fem censo 2022
+# base_pop = pd.read_csv('./pop_fem_2022/pop_fem_censo_2022_ibge.csv', encoding='ISO-8859-1', sep = ';')
+# base_pop['municipio_sep'] = [i.split('(')[0] for i in base_pop['municipio']]
+# base_pop['UF'] = [i.split('(')[1].replace(')', '') for i in base_pop['municipio']]
+#
+# base_pop['municipio_limpo'] = [func_limpar_string(i).replace("'", "").replace("-", " ") for i in base_pop['municipio_sep']]
+#
+# junta = base_pop[['municipio_limpo', 'UF', 'Pop_feminina_entre_10_50_anos_censo_2022']]
+#
+# df['evento_MUNNOMEX_limpo'] = [i.replace("'", '').replace("-", " ") for i in df['evento_MUNNOMEX']]
+#
+# df['evento_MUNNOMEX_limpo'] = np.where(df['evento_MUNNOMEX_limpo']=='EMBU', 'EMBU DAS ARTES', df['evento_MUNNOMEX_limpo'])
+# df['evento_MUNNOMEX_limpo'] = np.where(df['evento_MUNNOMEX_limpo']=='PARATI', 'PARATY', df['evento_MUNNOMEX_limpo'])
+# df['evento_MUNNOMEX_limpo'] = np.where(df['evento_MUNNOMEX_limpo']== 'MOJI MIRIM',  'MOGI MIRIM', df['evento_MUNNOMEX_limpo'])
+# df['evento_MUNNOMEX_limpo'] = np.where(df['evento_MUNNOMEX_limpo']== 'ITAPAGE',  'ITAPAJE', df['evento_MUNNOMEX_limpo'])
+# df['evento_MUNNOMEX_limpo'] = np.where(df['evento_MUNNOMEX_limpo']== 'ITAPAGE',  'ITAPAJE', df['evento_MUNNOMEX_limpo'])
+#
+# df = df.merge(junta, how='left', left_on=['evento_MUNNOMEX_limpo', 'evento_SIGLA_UF'], right_on=['municipio_limpo', 'UF'])
+#
+# df.loc[df['evento_MUNNOMEX_limpo'].str.contains('SANTA ISABEL DO PARA', case=False, na=False), ['evento_MUNNOMEX_limpo',  'evento_SIGLA_UF']]
+#
+# aa=df[df['Pop_feminina_entre_10_50_anos_censo_2022'].isnull()]
+#
+# pd.unique(aa['evento_MUNNOMEX'])
 ########################################################################################################################
 
 # Peso calculado
