@@ -264,7 +264,7 @@ for periodo in lista_periodo:
         f.write(tabulate(odds_ratio, headers = 'keys', tablefmt = 'grid'))
 
     odds_ratio['periodo'] = periodo
-    odds_ratio['modelo'] = f'modelo0_{missing}_CNES_CNES'
+    odds_ratio['modelo'] = f'modelo0_{missing}_CNES'
     odds_ratio.to_csv(f'resultados/modelo2_V2_CNES/{periodo}_modelo0_{missing}_CNES_OBITO.csv', decimal=',', sep=';', index=False)
 
     fig = sns.kdeplot(df_mod.query("ANO==0")["PROPENSITY_SCORE"],bw_adjust=.7, shade=False, color="r")
