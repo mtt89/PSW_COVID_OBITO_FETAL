@@ -91,6 +91,21 @@ print(len(df)) # 67 Obs
 # Montando o índice
 df['ind_leito_pop_fem'] = [ i/j for i, j in zip(df['QTLEIT'], df['Pop_feminina_entre_10_50_anos_censo_2022'])]
 
+def func_leitos_pop(qtd):
+    if qtd == 0:
+        return 'zero'
+    elif 0 < qtd <= 4.448935e-04:
+        return 'ate_q_25'
+    elif 4.448935e-04 < qtd <= 1.043907e-03:
+        return 'entre_q25_q_75'
+    elif qtd > 1.043907e-03:
+        return 'maior_q_75'
+    else:
+        return 'ignorado'
+
+df['cat_leitos_pop'] = [func_leitos_pop(qtd=i) for i in df['ind_leito_pop_fem']]
+# df['cat_leitos_pop'].value_counts()
+
 
 # df = df.loc[df['evento_MUNNOMEX_limpo'] != 'SERIDO']
 # df = df.loc[df['evento_MUNNOMEX_limpo'] != 'CAMPO DE SANTANA']
@@ -116,6 +131,7 @@ df['cat_peso_calc'] = [
 # aa = df.value_counts(['SEXO', 'def_sexo'])
 
 # Função para filtrar o dataframe e adicionar a coluna 'ANO'
+
 def filtrar_e_adicionar(df, per):
     anos = list(map(int, per.split('_')))
     df_ano = df.loc[df['ano_evento'].isin(anos)]
@@ -127,7 +143,7 @@ lista_periodo = [
     '2019_2020', '2019_2021', '2019_2022', '2020_2021', '2020_2022', '2021_2022', '2019_2020_2021'
     , '2019_2020_2022', '2019_2021_2022', '2020_2021_2022', '2019_2020_2021_2022'
     ]
-
+df_mod.columns
 # Exemplos de uso
 for periodo in lista_periodo:
     missing = 'missing_com_input'
@@ -147,9 +163,7 @@ for periodo in lista_periodo:
         , 'peso_faixa'
         , 'cat_peso_calc'
         , 'FLAG_BASE'
-        , 'cat_QTINST'
-        , 'cat_QTLEIT'
-        , 'cat_QT_TP_UNID'
+        , 'cat_leitos_pop'
         ]
     df_mod = df_ano[variaveis_1]
 
@@ -181,24 +195,11 @@ for periodo in lista_periodo:
         #, 'cat_peso_calc_AIG'
         , 'cat_peso_calc_GIG'
         , 'cat_peso_calc_PIG'
-        #, 'peso_faixa_entre_1500_2499'
-        #, 'peso_faixa_entre_2500_3500'
-        #, 'peso_faixa_entre_3500_3999'
-        #, 'peso_faixa_entre_500_1499'
-        #, 'peso_faixa_maior_igual_4000'
-        #, 'peso_faixa_menor_500'
-        # , 'cat_QTINST_entre_15_50'
-        # , 'cat_QTINST_entre_1_15'
-        # , 'cat_QTINST_maior_50'
-        # , 'cat_QTINST_zero'
-        , 'cat_QTLEIT_entre_15_50'
-        , 'cat_QTLEIT_entre_1_15'
-        # , 'cat_QTLEIT_maior_50'
-        , 'cat_QTLEIT_zero'
-        # , 'cat_QT_TP_UNID_entre_15_50'
-        # , 'cat_QT_TP_UNID_entre_1_15'
-        # , 'cat_QT_TP_UNID_maior_50'
-        # , 'cat_QT_TP_UNID_zero'
+        , 'cat_leitos_pop_ate_q_25'
+        , 'cat_leitos_pop_entre_q25_q_75'
+        #, 'cat_leitos_pop_maior_q_75'
+        , 'cat_leitos_pop_zero'
+
     ]
 
 ########################################################################################################################
@@ -275,7 +276,7 @@ for periodo in lista_periodo:
     )
     print(tabulate(odds_ratio, headers = 'keys', tablefmt = 'grid'))
 
-    with open(f'resultados/modelo2_V2_CNES/{periodo}_modelo0_{missing}_CNES_OBITO.txt', 'w') as f:
+    with open(f'resultados/modelo2_V3_CNES_POP/{periodo}_modelo0_{missing}_CNES_OBITO.txt', 'w') as f:
         f.write('---------------------------------------------------------------- \n')
         f.write('USING PROPENSITY SCORE TO SELECT/MATCH SAMPLES \n')
         f.write('----------------------------------------------------------------\n')
@@ -297,19 +298,19 @@ for periodo in lista_periodo:
 
     odds_ratio['periodo'] = periodo
     odds_ratio['modelo'] = f'modelo0_{missing}_CNES'
-    odds_ratio.to_csv(f'resultados/modelo2_V2_CNES/{periodo}_modelo0_{missing}_CNES_OBITO.csv', decimal=',', sep=';', index=False)
+    odds_ratio.to_csv(f'resultados/modelo2_V3_CNES_POP/{periodo}_modelo0_{missing}_CNES_OBITO.csv', decimal=',', sep=';', index=False)
 
     fig = sns.kdeplot(df_mod.query("ANO==0")["PROPENSITY_SCORE"],bw_adjust=.7, shade=False, color="r")
     fig = sns.kdeplot(df_mod.query("ANO==1")["PROPENSITY_SCORE"],bw_adjust=.7, shade=False, color="b")
     plt.legend(['Control','Treatment'])
-    plt.savefig(f'resultados/modelo2_V2_CNES/fig1a_{periodo}_modelo0_{missing}_CNES_OBITO.png', format='png', dpi=300)
+    plt.savefig(f'resultados/modelo2_V3_CNES_POP/fig1a_{periodo}_modelo0_{missing}_CNES_OBITO.png', format='png', dpi=300)
     plt.clf()
     #plt.show()
     #
     fig = sns.kdeplot(psw_base.query("ANO==0")["PROPENSITY_SCORE"],bw_adjust=0.7, shade=False, color="r")
     fig = sns.kdeplot(psw_base.query("ANO==1")["PROPENSITY_SCORE"],bw_adjust=0.7, shade=False, color="b")
     plt.legend(['Control','Treatment'])
-    plt.savefig(f'resultados/modelo2_V2_CNES/fig1b_{periodo}_modelo0_{missing}_CNES_OBITO.png', format='png', dpi=300)
+    plt.savefig(f'resultados/modelo2_V3_CNES_POP/fig1b_{periodo}_modelo0_{missing}_CNES_OBITO.png', format='png', dpi=300)
     plt.clf()
     #plt.show()
     #
@@ -322,7 +323,7 @@ for periodo in lista_periodo:
     mask = np.triu(np.ones_like(psw_base[var_corr].corr(method="spearman"), dtype=bool))
     heatmap = sns.heatmap(psw_base[var_corr].corr(method='spearman'), mask=mask, vmin=-1, vmax=1, annot=True, cmap='BrBG')
     heatmap.set_title('Matrix', fontdict={'fontsize':18}, pad=16)
-    plt.savefig(f'resultados/modelo2_V2_CNES/graf_corr_{periodo}_modelo0_{missing}_CNES_OBITO.png', format='png', dpi=300)
+    plt.savefig(f'resultados/modelo2_V3_CNES_POP/graf_corr_{periodo}_modelo0_{missing}_CNES_OBITO.png', format='png', dpi=300)
     plt.clf()
     # plt.show()
 ########################################################################################################################
@@ -420,7 +421,7 @@ for periodo in lista_periodo:
     )
     print(tabulate(odds_ratio, headers = 'keys', tablefmt = 'grid'))
 
-    with open(f'resultados/modelo2_V2_CNES/{periodo}_modelo1_{missing}_CNES_OBITO.txt', 'w') as f:
+    with open(f'resultados/modelo2_V3_CNES_POP/{periodo}_modelo1_{missing}_CNES_OBITO.txt', 'w') as f:
         f.write('---------------------------------------------------------------- \n')
         f.write('USING PROPENSITY SCORE TO SELECT/MATCH SAMPLES \n')
         f.write('----------------------------------------------------------------\n')
@@ -442,19 +443,19 @@ for periodo in lista_periodo:
 
     odds_ratio['periodo'] = periodo
     odds_ratio['modelo'] = f'modelo1_{missing}_CNES'
-    odds_ratio.to_csv(f'resultados/modelo2_V2_CNES/{periodo}_modelo1_{missing}_CNES_OBITO.csv', decimal=',', sep=';', index=False)
+    odds_ratio.to_csv(f'resultados/modelo2_V3_CNES_POP/{periodo}_modelo1_{missing}_CNES_OBITO.csv', decimal=',', sep=';', index=False)
 
     fig = sns.kdeplot(df_mod.query("ANO==0")["PROPENSITY_SCORE"], bw_adjust=.7, shade=False, color="r")
     fig = sns.kdeplot(df_mod.query("ANO==1")["PROPENSITY_SCORE"], bw_adjust=.7, shade=False, color="b")
     plt.legend(['Control', 'Treatment'])
-    plt.savefig(f'resultados/modelo2_V2_CNES/fig1a_{periodo}_modelo1_{missing}_CNES_OBITO.png', format='png', dpi=300)
+    plt.savefig(f'resultados/modelo2_V3_CNES_POP/fig1a_{periodo}_modelo1_{missing}_CNES_OBITO.png', format='png', dpi=300)
     plt.clf()
     # plt.show()
     #
     fig = sns.kdeplot(psw_base.query("ANO==0")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False, color="r")
     fig = sns.kdeplot(psw_base.query("ANO==1")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False, color="b")
     plt.legend(['Control', 'Treatment'])
-    plt.savefig(f'resultados/modelo2_V2_CNES/fig1b_{periodo}_modelo1_{missing}_CNES_OBITO.png', format='png', dpi=300)
+    plt.savefig(f'resultados/modelo2_V3_CNES_POP/fig1b_{periodo}_modelo1_{missing}_CNES_OBITO.png', format='png', dpi=300)
     plt.clf()
     # plt.show()
     #
@@ -468,7 +469,7 @@ for periodo in lista_periodo:
     heatmap = sns.heatmap(psw_base[var_corr].corr(method='spearman'), mask=mask, vmin=-1, vmax=1, annot=True,
                           cmap='BrBG')
     heatmap.set_title('Matrix', fontdict={'fontsize': 18}, pad=16)
-    plt.savefig(f'resultados/modelo2_V2_CNES/graf_corr_{periodo}_modelo1_{missing}_CNES_OBITO.png', format='png', dpi=300)
+    plt.savefig(f'resultados/modelo2_V3_CNES_POP/graf_corr_{periodo}_modelo1_{missing}_CNES_OBITO.png', format='png', dpi=300)
     plt.clf()
     # plt.show()
 ########################################################################################################################
@@ -575,7 +576,7 @@ for periodo in lista_periodo:
     )
     print(tabulate(odds_ratio, headers = 'keys', tablefmt = 'grid'))
 
-    with open(f'resultados/modelo2_V2_CNES/{periodo}_modelo2_{missing}_CNES_OBITO.txt', 'w') as f:
+    with open(f'resultados/modelo2_V3_CNES_POP/{periodo}_modelo2_{missing}_CNES_OBITO.txt', 'w') as f:
         f.write('---------------------------------------------------------------- \n')
         f.write('USING PROPENSITY SCORE TO SELECT/MATCH SAMPLES \n')
         f.write('----------------------------------------------------------------\n')
@@ -597,19 +598,19 @@ for periodo in lista_periodo:
 
     odds_ratio['periodo'] = periodo
     odds_ratio['modelo'] = f'modelo2_{missing}_CNES'
-    odds_ratio.to_csv(f'resultados/modelo2_V2_CNES/{periodo}_modelo2_{missing}_CNES_OBITO.csv', decimal=',', sep=';', index=False)
+    odds_ratio.to_csv(f'resultados/modelo2_V3_CNES_POP/{periodo}_modelo2_{missing}_CNES_OBITO.csv', decimal=',', sep=';', index=False)
 
     fig = sns.kdeplot(df_mod.query("ANO==0")["PROPENSITY_SCORE"], bw_adjust=.7, shade=False, color="r")
     fig = sns.kdeplot(df_mod.query("ANO==1")["PROPENSITY_SCORE"], bw_adjust=.7, shade=False, color="b")
     plt.legend(['Control', 'Treatment'])
-    plt.savefig(f'resultados/modelo2_V2_CNES/fig1a_{periodo}_modelo2_{missing}_CNES_OBITO.png', format='png', dpi=300)
+    plt.savefig(f'resultados/modelo2_V3_CNES_POP/fig1a_{periodo}_modelo2_{missing}_CNES_OBITO.png', format='png', dpi=300)
     plt.clf()
     # plt.show()
     #
     fig = sns.kdeplot(psw_base_balanced.query("ANO==0")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False, color="r")
     fig = sns.kdeplot(psw_base_balanced.query("ANO==1")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False, color="b")
     plt.legend(['Control', 'Treatment'])
-    plt.savefig(f'resultados/modelo2_V2_CNES/fig1b_{periodo}_modelo2_{missing}_CNES_OBITO.png', format='png', dpi=300)
+    plt.savefig(f'resultados/modelo2_V3_CNES_POP/fig1b_{periodo}_modelo2_{missing}_CNES_OBITO.png', format='png', dpi=300)
     plt.clf()
     # plt.show()
     #
@@ -623,7 +624,7 @@ for periodo in lista_periodo:
     heatmap = sns.heatmap(psw_base_balanced[var_corr].corr(method='spearman'), mask=mask, vmin=-1, vmax=1, annot=True,
                           cmap='BrBG')
     heatmap.set_title('Matrix', fontdict={'fontsize': 18}, pad=16)
-    plt.savefig(f'resultados/modelo2_V2_CNES/graf_corr_{periodo}_modelo2_{missing}_CNES_OBITO.png', format='png', dpi=300)
+    plt.savefig(f'resultados/modelo2_V3_CNES_POP/graf_corr_{periodo}_modelo2_{missing}_CNES_OBITO.png', format='png', dpi=300)
     plt.clf()
     # plt.show()
 ########################################################################################################################
@@ -737,7 +738,7 @@ for periodo in lista_periodo:
     )
     print(tabulate(odds_ratio, headers = 'keys', tablefmt = 'grid'))
 
-    with open(f'resultados/modelo2_V2_CNES/{periodo}_modelo3_{missing}_CNES_OBITO.txt', 'w') as f:
+    with open(f'resultados/modelo2_V3_CNES_POP/{periodo}_modelo3_{missing}_CNES_OBITO.txt', 'w') as f:
         f.write('---------------------------------------------------------------- \n')
         f.write('USING PROPENSITY SCORE TO SELECT/MATCH SAMPLES \n')
         f.write('----------------------------------------------------------------\n')
@@ -759,20 +760,20 @@ for periodo in lista_periodo:
 
     odds_ratio['periodo'] = periodo
     odds_ratio['modelo'] = f'modelo3_{missing}_CNES'
-    odds_ratio.to_csv(f'resultados/modelo2_V2_CNES/{periodo}_modelo3_{missing}_CNES_OBITO.csv', decimal=',', sep=';',
+    odds_ratio.to_csv(f'resultados/modelo2_V3_CNES_POP/{periodo}_modelo3_{missing}_CNES_OBITO.csv', decimal=',', sep=';',
                       index=False)
 
     fig = sns.kdeplot(df_mod.query("ANO==0")["PROPENSITY_SCORE"], bw_adjust=.7, shade=False, color="r")
     fig = sns.kdeplot(df_mod.query("ANO==1")["PROPENSITY_SCORE"], bw_adjust=.7, shade=False, color="b")
     plt.legend(['Control', 'Treatment'])
-    plt.savefig(f'resultados/modelo2_V2_CNES/fig1a_{periodo}_modelo3_{missing}_CNES_OBITO.png', format='png', dpi=300)
+    plt.savefig(f'resultados/modelo2_V3_CNES_POP/fig1a_{periodo}_modelo3_{missing}_CNES_OBITO.png', format='png', dpi=300)
     plt.clf()
     # plt.show()
     #
     fig = sns.kdeplot(psw_base_balanced.query("ANO==0")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False, color="r")
     fig = sns.kdeplot(psw_base_balanced.query("ANO==1")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False, color="b")
     plt.legend(['Control', 'Treatment'])
-    plt.savefig(f'resultados/modelo2_V2_CNES/fig1b_{periodo}_modelo3_{missing}_CNES_OBITO.png', format='png', dpi=300)
+    plt.savefig(f'resultados/modelo2_V3_CNES_POP/fig1b_{periodo}_modelo3_{missing}_CNES_OBITO.png', format='png', dpi=300)
     plt.clf()
     # plt.show()
     #
@@ -786,6 +787,6 @@ for periodo in lista_periodo:
     heatmap = sns.heatmap(psw_base_balanced[var_corr].corr(method='spearman'), mask=mask, vmin=-1, vmax=1, annot=True,
                           cmap='BrBG')
     heatmap.set_title('Matrix', fontdict={'fontsize': 18}, pad=16)
-    plt.savefig(f'resultados/modelo2_V2_CNES/graf_corr_{periodo}_modelo3_{missing}_CNES_OBITO.png', format='png', dpi=300)
+    plt.savefig(f'resultados/modelo2_V3_CNES_POP/graf_corr_{periodo}_modelo3_{missing}_CNES_OBITO.png', format='png', dpi=300)
     plt.clf()
     # plt.show()
