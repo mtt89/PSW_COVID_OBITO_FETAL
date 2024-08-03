@@ -18,7 +18,7 @@ Save to the folder, unzip and run the codes below
 ############################################################################################
 pasta_origem = r"D:/ETLSINASC"
 pasta_destino = r"C:/Users/gabri/Documents/PSW_COVID_OBITO_FETAL"
-year =[2019, 2020, 2021, 2022]
+year =[2018, 2019, 2020, 2021, 2022]
 #############################################################################################
 PCDAS = Import_Data_PCDAS()
 # Identify the files in the folder
@@ -37,7 +37,7 @@ for i in enderecos_filtrados:
 ############################################################################################
 pasta_origem = r"D:/ETLCNES"
 pasta_destino = r"C:/Users/gabri/Documents/PSW_COVID_OBITO_FETAL/"
-year = [2019, 2020, 2021, 2022]
+year = [2018, 2019, 2020, 2021, 2022]
 #############################################################################################
 PCDAS = Import_Data_PCDAS()
 lista_arq = PCDAS.function_list_path_files(path=pasta_origem)
@@ -56,7 +56,7 @@ for i in enderecos_filtrados:
 ###########################################################################################
 pasta_origem = r"D:/ETLSIM.DOFET/dados/apache-airflow/data/SIM_DOFET"
 pasta_destino = r"C:/Users/gabri/Documents/PSW_COVID_OBITO_FETAL"
-year =[2019, 2020, 2021, 2022]
+year =[2018, 2019, 2020, 2021, 2022]
 ###########################################################################################
 PCDAS = Import_Data_PCDAS()
 # Identify the files in the folder
