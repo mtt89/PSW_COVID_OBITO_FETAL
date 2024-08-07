@@ -96,6 +96,10 @@ for periodo in lista_periodo:
         #, 'peso_faixa_entre_500_1499'
         #, 'peso_faixa_maior_igual_4000'
         #, 'peso_faixa_menor_500'
+        # , 'idade_gestacao_faixa_entre_22_27'
+        # , 'idade_gestacao_faixa_entre_28_36'
+        # , 'idade_gestacao_faixa_entre_40_42'
+        # # ,  'idade_gestacao_faixa_entre_37_39'
         #,'cat_CENTROBS'
         #, 'cat_QTINST34'
         #,'cat_QTINST35'
@@ -251,7 +255,7 @@ for periodo in lista_periodo:
     df_metrics['periodo'] = periodo
     df_metrics['modelo'] = f'modelo1_{missing}'
     # Salvar em um arquivo CSV
-    df_metrics.to_csv(f'resultados/modelo_3_V0/{periodo}_modelo1_{missing}_teste_overfitting.csv', decimal=',', sep=';',
+    df_metrics.to_csv(f'resultados/modelo_3_sem_subgrupo/{periodo}_modelo1_{missing}_teste_overfitting.csv', decimal=',', sep=';',
                       index=False)
 
 
@@ -370,7 +374,7 @@ for periodo in lista_periodo:
     )
     print(tabulate(odds_ratio, headers='keys', tablefmt='grid'))
 
-    with open(f'resultados/modelo_3_V0/{periodo}_modelo1_{missing}_OBITO.txt', 'w') as f:
+    with open(f'resultados/modelo_3_sem_subgrupo/{periodo}_modelo1_{missing}_OBITO.txt', 'w') as f:
         f.write('---------------------------------------------------------------- \n')
         f.write('USING PROPENSITY SCORE TO SELECT/MATCH SAMPLES \n')
         f.write('----------------------------------------------------------------\n')
@@ -392,20 +396,20 @@ for periodo in lista_periodo:
 
     odds_ratio['periodo'] = periodo
     odds_ratio['modelo'] = f'modelo1_{missing}'
-    odds_ratio.to_csv(f'resultados/modelo_3_V0/{periodo}_modelo1_{missing}_OBITO.csv', decimal=',', sep=';',
+    odds_ratio.to_csv(f'resultados/modelo_3_sem_subgrupo/{periodo}_modelo1_{missing}_OBITO.csv', decimal=',', sep=';',
                       index=False)
 
     fig = sns.kdeplot(df_mod.query("ANO==0")["PROPENSITY_SCORE"], bw_adjust=.7, shade=False, color="r")
     fig = sns.kdeplot(df_mod.query("ANO==1")["PROPENSITY_SCORE"], bw_adjust=.7, shade=False, color="b")
     plt.legend(['Control', 'Treatment'])
-    plt.savefig(f'resultados/modelo_3_V0/fig1a_{periodo}_modelo1_{missing}_OBITO.png', format='png', dpi=300)
+    plt.savefig(f'resultados/modelo_3_sem_subgrupo/fig1a_{periodo}_modelo1_{missing}_OBITO.png', format='png', dpi=300)
     plt.clf()
     # plt.show()
     #
     fig = sns.kdeplot(psw_base.query("ANO==0")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False, color="r")
     fig = sns.kdeplot(psw_base.query("ANO==1")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False, color="b")
     plt.legend(['Control', 'Treatment'])
-    plt.savefig(f'resultados/modelo_3_V0/fig1b_{periodo}_modelo1_{missing}_OBITO.png', format='png', dpi=300)
+    plt.savefig(f'resultados/modelo_3_sem_subgrupo/fig1b_{periodo}_modelo1_{missing}_OBITO.png', format='png', dpi=300)
     plt.clf()
     # plt.show()
     #
@@ -419,6 +423,6 @@ for periodo in lista_periodo:
     heatmap = sns.heatmap(psw_base[var_corr].corr(method='spearman'), mask=mask, vmin=-1, vmax=1, annot=True,
                           cmap='BrBG')
     heatmap.set_title('Matrix', fontdict={'fontsize': 18}, pad=16)
-    plt.savefig(f'resultados/modelo_3_V0/graf_corr_{periodo}_modelo1_{missing}_OBITO.png', format='png', dpi=300)
+    plt.savefig(f'resultados/modelo_3_sem_subgrupo/graf_corr_{periodo}_modelo1_{missing}_OBITO.png', format='png', dpi=300)
     plt.clf()
     # plt.show()
