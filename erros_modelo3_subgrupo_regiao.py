@@ -49,8 +49,8 @@ lista_erro = []
 contador = 1
 
 # INPUT
-missing = 'missing_remocao'
-modelo = 'modelo_2_ERRO'
+missing = 'missing_removido'
+modelo = 'modelo_0_ERRO'
 path_ = 'modelo_3_subgrupo_regiao'
 #-----------------------------------------------------------------------------------------------------------------------
 for regiao in lista_regiao:
@@ -131,36 +131,15 @@ for regiao in lista_regiao:
             cpa = len(psw_base[psw_base['ANO'] == 0])
 
             ## SECOND REGRESSION
+
             aux = ['ANO']
-            psw_base['weights'] = psw_base['ANO'] / psw_base['PROPENSITY_SCORE'] + (
-                    (1 - psw_base['ANO']) / (1 - psw_base['PROPENSITY_SCORE']))
+            w = psw_base['ANO'] / psw_base['PROPENSITY_SCORE'] + (
+                        (1 - psw_base['ANO']) / (1 - psw_base['PROPENSITY_SCORE']))
+
             X = psw_base[aux + var_model].astype(float).values
             y = psw_base[['FLAG_BASE_SIM_DOFET']].values
-            weights = psw_base['weights'].values
-
-            # Aplicando Random UnderSampling para que a classe majoritária seja 50% maior que a minoritária
-            # sampling_strategy = 1 / 1.5  # Aproximadamente 0.769
-            rus = RandomUnderSampler(random_state=42)
-            X_res, y_res = rus.fit_resample(X, y)
-
-            # Criando um DataFrame da base balanceada
-            psw_base_balanced = pd.DataFrame(X_res, columns=aux + var_model)
-            psw_base_balanced['FLAG_BASE_SIM_DOFET'] = y_res
-
-            # Encontrando os índices das observações selecionadas
-            selected_indices = rus.sample_indices_
-
-            # Aplicando os pesos corretos às observações selecionadas
-            weights_balanced = weights[selected_indices]
-            psw_base_balanced['PROPENSITY_SCORE'] = psw_base['PROPENSITY_SCORE'].values[selected_indices]
-
-            # Treinando o modelo final
-            X_balanced = psw_base_balanced[aux + var_model].values
-            y_balanced = psw_base_balanced[['FLAG_BASE_SIM_DOFET']].values
-
-            X_ANO = sm.add_constant(X_balanced)
-            clf_ano = sm.Logit(y_balanced, X_ANO, weights=weights_balanced).fit(maxiter=1000)
-
+            X_ANO = sm.add_constant(X)
+            clf_ano = sm.Logit(y, X_ANO, weights=w).fit(maxiter=1000)
             aux = ['Intercept', 'ANO']
 
             IC = np.exp(clf_ano.conf_int(0.05))
@@ -195,26 +174,22 @@ for regiao in lista_regiao:
                 f.write(tabulate(odds_ratio, headers='keys', tablefmt='grid'))
 
             odds_ratio['periodo'] = periodo
-            odds_ratio['modelo'] = f'modelo2_{missing}'
-            odds_ratio.to_csv(f'resultados/{path_}/{periodo}_{modelo}_{missing}_{regiao}.csv', decimal=',',
-                              sep=';',
+            odds_ratio['modelo'] = f'modelo0_{missing}'
+            odds_ratio['regiao'] = regiao
+            odds_ratio.to_csv(f'resultados/{path_}/{periodo}_{modelo}_{missing}_{regiao}.csv', decimal=',', sep=';',
                               index=False)
 
             fig = sns.kdeplot(df_mod.query("ANO==0")["PROPENSITY_SCORE"], bw_adjust=.7, shade=False, color="r")
             fig = sns.kdeplot(df_mod.query("ANO==1")["PROPENSITY_SCORE"], bw_adjust=.7, shade=False, color="b")
             plt.legend(['Control', 'Treatment'])
-            plt.savefig(f'resultados/{path_}/fig1a_{periodo}_{modelo}_{missing}_{regiao}.png', format='png',
-                        dpi=300)
+            plt.savefig(f'resultados/{path_}/fig1a_{periodo}_{modelo}_{missing}_{regiao}.png', format='png', dpi=300)
             plt.clf()
             # plt.show()
             #
-            fig = sns.kdeplot(psw_base_balanced.query("ANO==0")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False,
-                              color="r")
-            fig = sns.kdeplot(psw_base_balanced.query("ANO==1")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False,
-                              color="b")
+            fig = sns.kdeplot(psw_base.query("ANO==0")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False, color="r")
+            fig = sns.kdeplot(psw_base.query("ANO==1")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False, color="b")
             plt.legend(['Control', 'Treatment'])
-            plt.savefig(f'resultados/{path_}/fig1b_{periodo}_{modelo}_{missing}_{regiao}.png', format='png',
-                        dpi=300)
+            plt.savefig(f'resultados/{path_}/fig1b_{periodo}_{modelo}_{missing}_{regiao}.png', format='png', dpi=300)
             plt.clf()
             # plt.show()
             #
@@ -224,18 +199,16 @@ for regiao in lista_regiao:
             plt.figure(figsize=(16, 6))
             # define the mask to set the values in the upper triangle to True
 
-            mask = np.triu(np.ones_like(psw_base_balanced[var_corr].corr(method="spearman"), dtype=bool))
-            heatmap = sns.heatmap(psw_base_balanced[var_corr].corr(method='spearman'), mask=mask, vmin=-1, vmax=1,
-                                  annot=True,
+            mask = np.triu(np.ones_like(psw_base[var_corr].corr(method="spearman"), dtype=bool))
+            heatmap = sns.heatmap(psw_base[var_corr].corr(method='spearman'), mask=mask, vmin=-1, vmax=1, annot=True,
                                   cmap='BrBG')
             heatmap.set_title('Matrix', fontdict={'fontsize': 18}, pad=16)
-            plt.savefig(f'resultados/{path_}/graf_corr_{periodo}_{modelo}_{missing}_{regiao}.png',
-                        format='png',
+            plt.savefig(f'resultados/{path_}/graf_corr_{periodo}_{modelo}_{missing}_{regiao}.png', format='png',
                         dpi=300)
             plt.clf()
             # plt.show()
         except:
-            lista_erro.append({'periodo':[periodo], 'regiao':[regiao]})
+            lista_erro.append({'periodo': [periodo], 'regiao': [regiao]})
             continue
 
 ########################################################################################################################
@@ -243,15 +216,14 @@ for regiao in lista_regiao:
 #---------------------------------------- Centro-Oeste ------------------------------------------------------------------
 
 ########################################################################################################################
-lista_periodo = ['2018_2019','2018_2019_2020','2018_2019_2021','2018_2019_2022','2018_2020_2021',
-'2018_2020_2022','2018_2019_2020_2021','2018_2019_2020_2022','2018_2019_2020_2021_2022']
+lista_periodo = ['2018_2019','2018_2019_2020','2018_2020_2021','2018_2019_2020_2021','2018_2019_2020_2021_2022']
 # lista_regiao = ['Sudeste', 'Norte', 'Nordeste', 'Sul', 'Centro-Oeste']
 lista_regiao = ['Centro-Oeste']
 lista_erro = []
 contador = 1
 # INPUT
-missing = 'missing_remocao'
-modelo = 'modelo_2_ERRO'
+missing = 'missing_removido'
+modelo = 'modelo_0_ERRO'
 path_ = 'modelo_3_subgrupo_regiao'
 ########################################################################################################################
 for regiao in lista_regiao:
@@ -332,36 +304,15 @@ for regiao in lista_regiao:
             cpa = len(psw_base[psw_base['ANO'] == 0])
 
             ## SECOND REGRESSION
+
             aux = ['ANO']
-            psw_base['weights'] = psw_base['ANO'] / psw_base['PROPENSITY_SCORE'] + (
+            w = psw_base['ANO'] / psw_base['PROPENSITY_SCORE'] + (
                     (1 - psw_base['ANO']) / (1 - psw_base['PROPENSITY_SCORE']))
+
             X = psw_base[aux + var_model].astype(float).values
             y = psw_base[['FLAG_BASE_SIM_DOFET']].values
-            weights = psw_base['weights'].values
-
-            # Aplicando Random UnderSampling para que a classe majoritária seja 50% maior que a minoritária
-            # sampling_strategy = 1 / 1.5  # Aproximadamente 0.769
-            rus = RandomUnderSampler(random_state=42)
-            X_res, y_res = rus.fit_resample(X, y)
-
-            # Criando um DataFrame da base balanceada
-            psw_base_balanced = pd.DataFrame(X_res, columns=aux + var_model)
-            psw_base_balanced['FLAG_BASE_SIM_DOFET'] = y_res
-
-            # Encontrando os índices das observações selecionadas
-            selected_indices = rus.sample_indices_
-
-            # Aplicando os pesos corretos às observações selecionadas
-            weights_balanced = weights[selected_indices]
-            psw_base_balanced['PROPENSITY_SCORE'] = psw_base['PROPENSITY_SCORE'].values[selected_indices]
-
-            # Treinando o modelo final
-            X_balanced = psw_base_balanced[aux + var_model].values
-            y_balanced = psw_base_balanced[['FLAG_BASE_SIM_DOFET']].values
-
-            X_ANO = sm.add_constant(X_balanced)
-            clf_ano = sm.Logit(y_balanced, X_ANO, weights=weights_balanced).fit(maxiter=1000)
-
+            X_ANO = sm.add_constant(X)
+            clf_ano = sm.Logit(y, X_ANO, weights=w).fit(maxiter=1000)
             aux = ['Intercept', 'ANO']
 
             IC = np.exp(clf_ano.conf_int(0.05))
@@ -396,26 +347,22 @@ for regiao in lista_regiao:
                 f.write(tabulate(odds_ratio, headers='keys', tablefmt='grid'))
 
             odds_ratio['periodo'] = periodo
-            odds_ratio['modelo'] = f'modelo2_{missing}'
-            odds_ratio.to_csv(f'resultados/{path_}/{periodo}_{modelo}_{missing}_{regiao}.csv', decimal=',',
-                              sep=';',
+            odds_ratio['modelo'] = f'modelo0_{missing}'
+            odds_ratio['regiao'] = regiao
+            odds_ratio.to_csv(f'resultados/{path_}/{periodo}_{modelo}_{missing}_{regiao}.csv', decimal=',', sep=';',
                               index=False)
 
             fig = sns.kdeplot(df_mod.query("ANO==0")["PROPENSITY_SCORE"], bw_adjust=.7, shade=False, color="r")
             fig = sns.kdeplot(df_mod.query("ANO==1")["PROPENSITY_SCORE"], bw_adjust=.7, shade=False, color="b")
             plt.legend(['Control', 'Treatment'])
-            plt.savefig(f'resultados/{path_}/fig1a_{periodo}_{modelo}_{missing}_{regiao}.png', format='png',
-                        dpi=300)
+            plt.savefig(f'resultados/{path_}/fig1a_{periodo}_{modelo}_{missing}_{regiao}.png', format='png', dpi=300)
             plt.clf()
             # plt.show()
             #
-            fig = sns.kdeplot(psw_base_balanced.query("ANO==0")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False,
-                              color="r")
-            fig = sns.kdeplot(psw_base_balanced.query("ANO==1")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False,
-                              color="b")
+            fig = sns.kdeplot(psw_base.query("ANO==0")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False, color="r")
+            fig = sns.kdeplot(psw_base.query("ANO==1")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False, color="b")
             plt.legend(['Control', 'Treatment'])
-            plt.savefig(f'resultados/{path_}/fig1b_{periodo}_{modelo}_{missing}_{regiao}.png', format='png',
-                        dpi=300)
+            plt.savefig(f'resultados/{path_}/fig1b_{periodo}_{modelo}_{missing}_{regiao}.png', format='png', dpi=300)
             plt.clf()
             # plt.show()
             #
@@ -425,18 +372,16 @@ for regiao in lista_regiao:
             plt.figure(figsize=(16, 6))
             # define the mask to set the values in the upper triangle to True
 
-            mask = np.triu(np.ones_like(psw_base_balanced[var_corr].corr(method="spearman"), dtype=bool))
-            heatmap = sns.heatmap(psw_base_balanced[var_corr].corr(method='spearman'), mask=mask, vmin=-1, vmax=1,
-                                  annot=True,
+            mask = np.triu(np.ones_like(psw_base[var_corr].corr(method="spearman"), dtype=bool))
+            heatmap = sns.heatmap(psw_base[var_corr].corr(method='spearman'), mask=mask, vmin=-1, vmax=1, annot=True,
                                   cmap='BrBG')
             heatmap.set_title('Matrix', fontdict={'fontsize': 18}, pad=16)
-            plt.savefig(f'resultados/{path_}/graf_corr_{periodo}_{modelo}_{missing}_{regiao}.png',
-                        format='png',
+            plt.savefig(f'resultados/{path_}/graf_corr_{periodo}_{modelo}_{missing}_{regiao}.png', format='png',
                         dpi=300)
             plt.clf()
             # plt.show()
         except:
-            lista_erro.append({'periodo':[periodo], 'regiao':[regiao]})
+            lista_erro.append({'periodo': [periodo], 'regiao': [regiao]})
             continue
 
 ########################################################################################################################
@@ -444,14 +389,14 @@ for regiao in lista_regiao:
 #---------------------------------------- Nordeste ------------------------------------------------------------------
 
 ########################################################################################################################
-lista_periodo = ['2018_2020', '2019_2021', '2018_2020_2021', '2019_2020_2022']
+lista_periodo = ['2019_2021', '2018_2019_2020', '2019_2020_2022','2018_2019_2020_2021']
 # lista_regiao = ['Sudeste', 'Norte', 'Nordeste', 'Sul', 'Centro-Oeste']
 lista_regiao = ['Nordeste']
 lista_erro = []
 contador = 1
 # INPUT
-missing = 'missing_remocao'
-modelo = 'modelo_2_ERRO'
+missing = 'missing_removido'
+modelo = 'modelo_0_ERRO'
 path_ = 'modelo_3_subgrupo_regiao'
 ########################################################################################################################
 for regiao in lista_regiao:
@@ -492,13 +437,13 @@ for regiao in lista_regiao:
                 # , 'evento_REGIAO_Sul'
                 # , 'idademae_faixa_entre_20_34'
                 'idademae_faixa_maior_igual_35'
-                #  'idademae_faixa_entre_35_39'
+                 # 'idademae_faixa_entre_35_39'
                 # , 'idademae_faixa_maior_igual_40'
                 , 'idademae_faixa_menor_igual_19'
                 , 'escolaridade_mae_Ensino_medio'
                 # , 'escolaridade_mae_Ensino_superior'
                 , 'escolaridade_mae_Fundamental'
-                #, 'escolaridade_mae_Sem_escolaridade'
+                # , 'escolaridade_mae_Sem_escolaridade'
                 , 'tipo_gravidez_Multipla'
                 # , 'tipo_gravidez_Unica'
                 # , 'PRM'
@@ -533,36 +478,15 @@ for regiao in lista_regiao:
             cpa = len(psw_base[psw_base['ANO'] == 0])
 
             ## SECOND REGRESSION
+
             aux = ['ANO']
-            psw_base['weights'] = psw_base['ANO'] / psw_base['PROPENSITY_SCORE'] + (
+            w = psw_base['ANO'] / psw_base['PROPENSITY_SCORE'] + (
                     (1 - psw_base['ANO']) / (1 - psw_base['PROPENSITY_SCORE']))
+
             X = psw_base[aux + var_model].astype(float).values
             y = psw_base[['FLAG_BASE_SIM_DOFET']].values
-            weights = psw_base['weights'].values
-
-            # Aplicando Random UnderSampling para que a classe majoritária seja 50% maior que a minoritária
-            # sampling_strategy = 1 / 1.5  # Aproximadamente 0.769
-            rus = RandomUnderSampler(random_state=42)
-            X_res, y_res = rus.fit_resample(X, y)
-
-            # Criando um DataFrame da base balanceada
-            psw_base_balanced = pd.DataFrame(X_res, columns=aux + var_model)
-            psw_base_balanced['FLAG_BASE_SIM_DOFET'] = y_res
-
-            # Encontrando os índices das observações selecionadas
-            selected_indices = rus.sample_indices_
-
-            # Aplicando os pesos corretos às observações selecionadas
-            weights_balanced = weights[selected_indices]
-            psw_base_balanced['PROPENSITY_SCORE'] = psw_base['PROPENSITY_SCORE'].values[selected_indices]
-            psw_base_balanced.sum()
-            # Treinando o modelo final
-            X_balanced = psw_base_balanced[aux + var_model].values
-            y_balanced = psw_base_balanced[['FLAG_BASE_SIM_DOFET']].values
-
-            X_ANO = sm.add_constant(X_balanced)
-            clf_ano = sm.Logit(y_balanced, X_ANO, weights=weights_balanced).fit(maxiter=1000)
-
+            X_ANO = sm.add_constant(X)
+            clf_ano = sm.Logit(y, X_ANO, weights=w).fit(maxiter=1000)
             aux = ['Intercept', 'ANO']
 
             IC = np.exp(clf_ano.conf_int(0.05))
@@ -597,26 +521,22 @@ for regiao in lista_regiao:
                 f.write(tabulate(odds_ratio, headers='keys', tablefmt='grid'))
 
             odds_ratio['periodo'] = periodo
-            odds_ratio['modelo'] = f'modelo2_{missing}'
-            odds_ratio.to_csv(f'resultados/{path_}/{periodo}_{modelo}_{missing}_{regiao}.csv', decimal=',',
-                              sep=';',
+            odds_ratio['modelo'] = f'modelo0_{missing}'
+            odds_ratio['regiao'] = regiao
+            odds_ratio.to_csv(f'resultados/{path_}/{periodo}_{modelo}_{missing}_{regiao}.csv', decimal=',', sep=';',
                               index=False)
 
             fig = sns.kdeplot(df_mod.query("ANO==0")["PROPENSITY_SCORE"], bw_adjust=.7, shade=False, color="r")
             fig = sns.kdeplot(df_mod.query("ANO==1")["PROPENSITY_SCORE"], bw_adjust=.7, shade=False, color="b")
             plt.legend(['Control', 'Treatment'])
-            plt.savefig(f'resultados/{path_}/fig1a_{periodo}_{modelo}_{missing}_{regiao}.png', format='png',
-                        dpi=300)
+            plt.savefig(f'resultados/{path_}/fig1a_{periodo}_{modelo}_{missing}_{regiao}.png', format='png', dpi=300)
             plt.clf()
             # plt.show()
             #
-            fig = sns.kdeplot(psw_base_balanced.query("ANO==0")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False,
-                              color="r")
-            fig = sns.kdeplot(psw_base_balanced.query("ANO==1")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False,
-                              color="b")
+            fig = sns.kdeplot(psw_base.query("ANO==0")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False, color="r")
+            fig = sns.kdeplot(psw_base.query("ANO==1")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False, color="b")
             plt.legend(['Control', 'Treatment'])
-            plt.savefig(f'resultados/{path_}/fig1b_{periodo}_{modelo}_{missing}_{regiao}.png', format='png',
-                        dpi=300)
+            plt.savefig(f'resultados/{path_}/fig1b_{periodo}_{modelo}_{missing}_{regiao}.png', format='png', dpi=300)
             plt.clf()
             # plt.show()
             #
@@ -626,18 +546,16 @@ for regiao in lista_regiao:
             plt.figure(figsize=(16, 6))
             # define the mask to set the values in the upper triangle to True
 
-            mask = np.triu(np.ones_like(psw_base_balanced[var_corr].corr(method="spearman"), dtype=bool))
-            heatmap = sns.heatmap(psw_base_balanced[var_corr].corr(method='spearman'), mask=mask, vmin=-1, vmax=1,
-                                  annot=True,
+            mask = np.triu(np.ones_like(psw_base[var_corr].corr(method="spearman"), dtype=bool))
+            heatmap = sns.heatmap(psw_base[var_corr].corr(method='spearman'), mask=mask, vmin=-1, vmax=1, annot=True,
                                   cmap='BrBG')
             heatmap.set_title('Matrix', fontdict={'fontsize': 18}, pad=16)
-            plt.savefig(f'resultados/{path_}/graf_corr_{periodo}_{modelo}_{missing}_{regiao}.png',
-                        format='png',
+            plt.savefig(f'resultados/{path_}/graf_corr_{periodo}_{modelo}_{missing}_{regiao}.png', format='png',
                         dpi=300)
             plt.clf()
             # plt.show()
         except:
-            lista_erro.append({'periodo':[periodo], 'regiao':[regiao]})
+            lista_erro.append({'periodo': [periodo], 'regiao': [regiao]})
             continue
 
 ########################################################################################################################
@@ -651,8 +569,8 @@ lista_regiao = ['Norte']
 lista_erro = []
 contador = 1
 # INPUT
-missing = 'missing_remocao'
-modelo = 'modelo_2_ERRO'
+missing = 'missing_removido'
+modelo = 'modelo_0_ERRO'
 path_ = 'modelo_3_subgrupo_regiao'
 ########################################################################################################################
 for regiao in lista_regiao:
@@ -664,7 +582,7 @@ for regiao in lista_regiao:
         try:
             df_ano = filtrar_e_adicionar(df_regiao, periodo)
             # df_ano['idademae_faixa'] = ['maior_igual_35' if i in(['entre_35_39', 'maior_igual_40']) else i for i in df_ano['idademae_faixa']]
-            # df_ano['escolaridade_mae'] = ['Fundamental' if i =='Sem_escolaridade' else i for i in df_ano['escolaridade_mae']]
+            df_ano['escolaridade_mae'] = ['Fundamental' if i =='Sem_escolaridade' else i for i in df_ano['escolaridade_mae']]
             # Separando df_mod
             variaveis_1 = [
                 'ANO'
@@ -699,7 +617,7 @@ for regiao in lista_regiao:
                 , 'escolaridade_mae_Ensino_medio'
                 # , 'escolaridade_mae_Ensino_superior'
                 , 'escolaridade_mae_Fundamental'
-                , 'escolaridade_mae_Sem_escolaridade'
+                # , 'escolaridade_mae_Sem_escolaridade'
                 , 'tipo_gravidez_Multipla'
                 # , 'tipo_gravidez_Unica'
                 # , 'PRM'
@@ -734,36 +652,15 @@ for regiao in lista_regiao:
             cpa = len(psw_base[psw_base['ANO'] == 0])
 
             ## SECOND REGRESSION
+
             aux = ['ANO']
-            psw_base['weights'] = psw_base['ANO'] / psw_base['PROPENSITY_SCORE'] + (
+            w = psw_base['ANO'] / psw_base['PROPENSITY_SCORE'] + (
                     (1 - psw_base['ANO']) / (1 - psw_base['PROPENSITY_SCORE']))
+
             X = psw_base[aux + var_model].astype(float).values
             y = psw_base[['FLAG_BASE_SIM_DOFET']].values
-            weights = psw_base['weights'].values
-
-            # Aplicando Random UnderSampling para que a classe majoritária seja 50% maior que a minoritária
-            # sampling_strategy = 1 / 1.5  # Aproximadamente 0.769
-            rus = RandomUnderSampler(random_state=42)
-            X_res, y_res = rus.fit_resample(X, y)
-
-            # Criando um DataFrame da base balanceada
-            psw_base_balanced = pd.DataFrame(X_res, columns=aux + var_model)
-            psw_base_balanced['FLAG_BASE_SIM_DOFET'] = y_res
-
-            # Encontrando os índices das observações selecionadas
-            selected_indices = rus.sample_indices_
-
-            # Aplicando os pesos corretos às observações selecionadas
-            weights_balanced = weights[selected_indices]
-            psw_base_balanced['PROPENSITY_SCORE'] = psw_base['PROPENSITY_SCORE'].values[selected_indices]
-            psw_base_balanced.sum()
-            # Treinando o modelo final
-            X_balanced = psw_base_balanced[aux + var_model].values
-            y_balanced = psw_base_balanced[['FLAG_BASE_SIM_DOFET']].values
-
-            X_ANO = sm.add_constant(X_balanced)
-            clf_ano = sm.Logit(y_balanced, X_ANO, weights=weights_balanced).fit(maxiter=1000)
-
+            X_ANO = sm.add_constant(X)
+            clf_ano = sm.Logit(y, X_ANO, weights=w).fit(maxiter=1000)
             aux = ['Intercept', 'ANO']
 
             IC = np.exp(clf_ano.conf_int(0.05))
@@ -798,26 +695,22 @@ for regiao in lista_regiao:
                 f.write(tabulate(odds_ratio, headers='keys', tablefmt='grid'))
 
             odds_ratio['periodo'] = periodo
-            odds_ratio['modelo'] = f'modelo2_{missing}'
-            odds_ratio.to_csv(f'resultados/{path_}/{periodo}_{modelo}_{missing}_{regiao}.csv', decimal=',',
-                              sep=';',
+            odds_ratio['modelo'] = f'modelo0_{missing}'
+            odds_ratio['regiao'] = regiao
+            odds_ratio.to_csv(f'resultados/{path_}/{periodo}_{modelo}_{missing}_{regiao}.csv', decimal=',', sep=';',
                               index=False)
 
             fig = sns.kdeplot(df_mod.query("ANO==0")["PROPENSITY_SCORE"], bw_adjust=.7, shade=False, color="r")
             fig = sns.kdeplot(df_mod.query("ANO==1")["PROPENSITY_SCORE"], bw_adjust=.7, shade=False, color="b")
             plt.legend(['Control', 'Treatment'])
-            plt.savefig(f'resultados/{path_}/fig1a_{periodo}_{modelo}_{missing}_{regiao}.png', format='png',
-                        dpi=300)
+            plt.savefig(f'resultados/{path_}/fig1a_{periodo}_{modelo}_{missing}_{regiao}.png', format='png', dpi=300)
             plt.clf()
             # plt.show()
             #
-            fig = sns.kdeplot(psw_base_balanced.query("ANO==0")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False,
-                              color="r")
-            fig = sns.kdeplot(psw_base_balanced.query("ANO==1")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False,
-                              color="b")
+            fig = sns.kdeplot(psw_base.query("ANO==0")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False, color="r")
+            fig = sns.kdeplot(psw_base.query("ANO==1")["PROPENSITY_SCORE"], bw_adjust=0.7, shade=False, color="b")
             plt.legend(['Control', 'Treatment'])
-            plt.savefig(f'resultados/{path_}/fig1b_{periodo}_{modelo}_{missing}_{regiao}.png', format='png',
-                        dpi=300)
+            plt.savefig(f'resultados/{path_}/fig1b_{periodo}_{modelo}_{missing}_{regiao}.png', format='png', dpi=300)
             plt.clf()
             # plt.show()
             #
@@ -827,16 +720,15 @@ for regiao in lista_regiao:
             plt.figure(figsize=(16, 6))
             # define the mask to set the values in the upper triangle to True
 
-            mask = np.triu(np.ones_like(psw_base_balanced[var_corr].corr(method="spearman"), dtype=bool))
-            heatmap = sns.heatmap(psw_base_balanced[var_corr].corr(method='spearman'), mask=mask, vmin=-1, vmax=1,
-                                  annot=True,
+            mask = np.triu(np.ones_like(psw_base[var_corr].corr(method="spearman"), dtype=bool))
+            heatmap = sns.heatmap(psw_base[var_corr].corr(method='spearman'), mask=mask, vmin=-1, vmax=1, annot=True,
                                   cmap='BrBG')
             heatmap.set_title('Matrix', fontdict={'fontsize': 18}, pad=16)
-            plt.savefig(f'resultados/{path_}/graf_corr_{periodo}_{modelo}_{missing}_{regiao}.png',
-                        format='png',
+            plt.savefig(f'resultados/{path_}/graf_corr_{periodo}_{modelo}_{missing}_{regiao}.png', format='png',
                         dpi=300)
             plt.clf()
             # plt.show()
         except:
-            lista_erro.append({'periodo':[periodo], 'regiao':[regiao]})
+            lista_erro.append({'periodo': [periodo], 'regiao': [regiao]})
             continue
+
