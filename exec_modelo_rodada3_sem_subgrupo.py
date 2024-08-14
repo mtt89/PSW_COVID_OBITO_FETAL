@@ -81,7 +81,7 @@ for periodo in lista_periodo:
             # , 'evento_REGIAO_Sudeste'
             , 'evento_REGIAO_Sul'
             # , 'idademae_faixa_entre_20_34'
-             'idademae_faixa_entre_35_39'
+            , 'idademae_faixa_entre_35_39'
             , 'idademae_faixa_maior_igual_40'
             , 'idademae_faixa_menor_igual_19'
             , 'escolaridade_mae_Ensino_medio'
