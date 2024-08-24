@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import sys
 import matplotlib.pyplot as plt
 from geopy.distance import geodesic
 
@@ -482,12 +483,16 @@ for munic in chave_uf_mun:
 df_perde_ganha = pd.concat(lista_perde_ganha)
 del lista_perde_ganha
 
-contador = 1
+contador = 0
 lista_perde_ganha_cor = []
 for munic in chave_uf_mun:
+    contador += 1
     df = df_perde_ganha[df_perde_ganha['chave_mun_uf_evento'] == munic]
     munic_ganha = pd.unique(df['compara_chave_mun_uf_evento'])
+    contador2 = 1
     for munic2 in munic_ganha:
+        print(f'Rodada {contador} de {len(chave_uf_mun)} munic perde {munic} munic ganha {munic2} subrodada {contador2} de {len(munic_ganha)}')
+        contador2 += 1
         df_cor = df[df['compara_chave_mun_uf_evento']==munic2].sort_values('ano_evento')
         if len(df_cor) == 5:
             df_cor['var_QTD_NASCIMENTOS'] = df_cor.sort_values(
@@ -514,17 +519,11 @@ for munic in chave_uf_mun:
                 ['compara_chave_mun_uf_evento']
             )['compara_QTD_NASCIMENTOS'].diff()
 
-            df_cor_var = df_cor[['var_QTD_NASCIMENTOS', 'compara_var_QTD_NASCIMENTOS']].corr().iloc[0, 1]
-            df_cor_dif = df_cor[['dif_QTD_NASCIMENTOS', 'compara_dif_QTD_NASCIMENTOS']].corr().iloc[0, 1]
+            df_cor = df_cor[df_cor['ano_evento']!=2018]
+            df_cor['cor_var_nasc'] = df_cor[['var_QTD_NASCIMENTOS', 'compara_var_QTD_NASCIMENTOS']].corr().iloc[0, 1]
+            df_cor['cor_dif_nasc'] = df_cor[['dif_QTD_NASCIMENTOS', 'compara_dif_QTD_NASCIMENTOS']].corr().iloc[0, 1]
+            lista_perde_ganha_cor.append(df_cor)
         else:
-            # Definir todos os anos e municípios esperados
-            anos = [2019, 2020, 2021, 2022]
-            municipios = df_cor['compara_chave_mun_uf_evento'].unique()
-
-            # Criar um MultiIndex com todas as combinações possíveis de anos e municípios
-            idx = pd.MultiIndex.from_product([anos, municipios], names=['ano_evento', 'municipio'])
-
-            # Reindexar o DataFrame para incluir todas as combinações e preencher valores faltantes com 0
-            df_complete = df.set_index(['ano', 'municipio']).reindex(idx, fill_value=0).reset_index()
+            sys.exit()
 
 
