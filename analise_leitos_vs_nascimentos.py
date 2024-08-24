@@ -464,21 +464,16 @@ for munic in chave_uf_mun:
     print(f'Rodada {contador} de {len(chave_uf_mun)}')
     contador+=1
     muncipio_transf = lista_100.loc[lista_100['municipio1']==munic, 'municipio2']
-    df_perde = df_agrupado.loc[(df_agrupado['ano_evento'] != 2018) &
-                             (df_agrupado['chave_mun_uf_evento'] == munic), colunas].reset_index(drop=True)
-    df_ganha = df_agrupado.loc[(df_agrupado['ano_evento'] != 2018) &
-                             (df_agrupado['chave_mun_uf_evento'].isin(muncipio_transf)), colunas].reset_index(drop=True)
+    df_perde = df_agrupado.loc[df_agrupado['chave_mun_uf_evento'] == munic, colunas].reset_index(drop=True)
+    df_ganha = df_agrupado.loc[df_agrupado['chave_mun_uf_evento'].isin(muncipio_transf), colunas].reset_index(drop=True)
     # Definir todos os anos e municípios esperados
-    anos = [2019, 2020, 2021, 2022]
+    anos = [2018, 2019, 2020, 2021, 2022]
     municipios = df_ganha['chave_mun_uf_evento'].unique()
 
     # Criar um MultiIndex com todas as combinações possíveis de anos e municípios
     idx = pd.MultiIndex.from_product([anos, municipios], names=['ano_evento', 'chave_mun_uf_evento'])
-
     # Reindexar o DataFrame para incluir todas as combinações e preencher valores faltantes com 0
     df_ganha = df_ganha.set_index(['ano_evento', 'chave_mun_uf_evento']).reindex(idx, fill_value=0).reset_index()
-
-
 
     df_ganha.columns = [f'compara_{i}' for i in df_ganha.columns]
     df_perde = df_perde.merge(df_ganha, how='left', left_on='ano_evento', right_on='compara_ano_evento')
@@ -494,7 +489,31 @@ for munic in chave_uf_mun:
     munic_ganha = pd.unique(df['compara_chave_mun_uf_evento'])
     for munic2 in munic_ganha:
         df_cor = df[df['compara_chave_mun_uf_evento']==munic2].sort_values('ano_evento')
-        if len(df_cor) == 4:
+        if len(df_cor) == 5:
+            df_cor['var_QTD_NASCIMENTOS'] = df_cor.sort_values(
+                by=['ano_evento']
+            ).groupby(
+                ['chave_mun_uf_evento']
+            )['QTD_NASCIMENTOS'].pct_change()
+
+            df_cor['dif_QTD_NASCIMENTOS'] = df_cor.sort_values(
+                by=['ano_evento']
+            ).groupby(
+                ['chave_mun_uf_evento']
+            )['QTD_NASCIMENTOS'].diff()
+
+            df_cor['compara_var_QTD_NASCIMENTOS'] = df_cor.sort_values(
+                by=['compara_ano_evento']
+            ).groupby(
+                ['compara_chave_mun_uf_evento']
+            )['compara_QTD_NASCIMENTOS'].pct_change()
+
+            df_cor['compara_dif_QTD_NASCIMENTOS'] = df_cor.sort_values(
+                by=['compara_ano_evento']
+            ).groupby(
+                ['compara_chave_mun_uf_evento']
+            )['compara_QTD_NASCIMENTOS'].diff()
+
             df_cor_var = df_cor[['var_QTD_NASCIMENTOS', 'compara_var_QTD_NASCIMENTOS']].corr().iloc[0, 1]
             df_cor_dif = df_cor[['dif_QTD_NASCIMENTOS', 'compara_dif_QTD_NASCIMENTOS']].corr().iloc[0, 1]
         else:
