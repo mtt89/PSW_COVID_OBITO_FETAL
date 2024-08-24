@@ -432,17 +432,19 @@ df_distancia_mun = pd.concat(df_distancia_mun)
 # df_distancia_mun.to_csv('./base_limpa/distancia_municipios.csv', sep=';', decimal=',',  index=False)
 
 lista = pd.read_csv('./base_limpa/distancia_municipios.csv', sep=';', decimal=',')
-munic1 = lista['municipio2']
-munic2 = lista['municipio1']
-lista2 = lista
+lista = lista.drop(columns='Unnamed: 0').reset_index(drop=True)
+lista = lista.drop_duplicates().reset_index(drop=True)
+munic1 = lista['municipio1']
+munic2 = lista['municipio2']
+lista2 = lista.copy()
 lista2['municipio1']=munic2
 lista2['municipio2']=munic1
-lista = pd.concat([lista, lista2]).reset_index(drop=True)
-lista = lista.drop_duplicates()
-lista = lista.drop(columns='Unnamed: 0').reset_index(drop=True)
+lista3 = pd.concat([lista, lista2]).reset_index(drop=True)
+
+del lista, lista2
 
 # selecionando somente municípios com até 100 km de distância
-lista_100 = lista[lista['dist_km'] <= 100.99].sort_values(['municipio1', 'dist_km']).reset_index(drop=True)
+lista_100 = lista3[lista3['dist_km'] <= 100.99].sort_values(['municipio1', 'dist_km']).reset_index(drop=True)
 
 variacoes_negativas = df_agrupado.loc[(df_agrupado['ano_evento'] != 2018) &
                               (df_agrupado['var_QTD_NASCIMENTOS'] < 0)].reset_index(drop=True)
@@ -466,6 +468,18 @@ for munic in chave_uf_mun:
                              (df_agrupado['chave_mun_uf_evento'] == munic), colunas].reset_index(drop=True)
     df_ganha = df_agrupado.loc[(df_agrupado['ano_evento'] != 2018) &
                              (df_agrupado['chave_mun_uf_evento'].isin(muncipio_transf)), colunas].reset_index(drop=True)
+    # Definir todos os anos e municípios esperados
+    anos = [2019, 2020, 2021, 2022]
+    municipios = df_ganha['chave_mun_uf_evento'].unique()
+
+    # Criar um MultiIndex com todas as combinações possíveis de anos e municípios
+    idx = pd.MultiIndex.from_product([anos, municipios], names=['ano_evento', 'chave_mun_uf_evento'])
+
+    # Reindexar o DataFrame para incluir todas as combinações e preencher valores faltantes com 0
+    df_ganha = df_ganha.set_index(['ano_evento', 'chave_mun_uf_evento']).reindex(idx, fill_value=0).reset_index()
+
+
+
     df_ganha.columns = [f'compara_{i}' for i in df_ganha.columns]
     df_perde = df_perde.merge(df_ganha, how='left', left_on='ano_evento', right_on='compara_ano_evento')
     lista_perde_ganha.append(df_perde)
@@ -473,5 +487,25 @@ for munic in chave_uf_mun:
 df_perde_ganha = pd.concat(lista_perde_ganha)
 del lista_perde_ganha
 
+contador = 1
+lista_perde_ganha_cor = []
+for munic in chave_uf_mun:
+    df = df_perde_ganha[df_perde_ganha['chave_mun_uf_evento'] == munic]
+    munic_ganha = pd.unique(df['compara_chave_mun_uf_evento'])
+    for munic2 in munic_ganha:
+        df_cor = df[df['compara_chave_mun_uf_evento']==munic2].sort_values('ano_evento')
+        if len(df_cor) == 4:
+            df_cor_var = df_cor[['var_QTD_NASCIMENTOS', 'compara_var_QTD_NASCIMENTOS']].corr().iloc[0, 1]
+            df_cor_dif = df_cor[['dif_QTD_NASCIMENTOS', 'compara_dif_QTD_NASCIMENTOS']].corr().iloc[0, 1]
+        else:
+            # Definir todos os anos e municípios esperados
+            anos = [2019, 2020, 2021, 2022]
+            municipios = df_cor['compara_chave_mun_uf_evento'].unique()
+
+            # Criar um MultiIndex com todas as combinações possíveis de anos e municípios
+            idx = pd.MultiIndex.from_product([anos, municipios], names=['ano_evento', 'municipio'])
+
+            # Reindexar o DataFrame para incluir todas as combinações e preencher valores faltantes com 0
+            df_complete = df.set_index(['ano', 'municipio']).reindex(idx, fill_value=0).reset_index()
 
 
