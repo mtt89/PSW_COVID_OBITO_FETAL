@@ -446,7 +446,7 @@ del lista, lista2
 
 # selecionando somente municípios com até 100 km de distância
 lista_100 = lista3[lista3['dist_km'] <= 100.99].sort_values(['municipio1', 'dist_km']).reset_index(drop=True)
-
+del lista3
 variacoes_negativas = df_agrupado.loc[(df_agrupado['ano_evento'] != 2018) &
                               (df_agrupado['var_QTD_NASCIMENTOS'] < 0)].reset_index(drop=True)
 
@@ -469,12 +469,18 @@ for munic in chave_uf_mun:
     df_ganha = df_agrupado.loc[df_agrupado['chave_mun_uf_evento'].isin(muncipio_transf), colunas].reset_index(drop=True)
     # Definir todos os anos e municípios esperados
     anos = [2018, 2019, 2020, 2021, 2022]
-    municipios = df_ganha['chave_mun_uf_evento'].unique()
+    municipios_perde = df_perde['chave_mun_uf_evento'].unique()
+    municipios_ganha = df_ganha['chave_mun_uf_evento'].unique()
+    # Criar um MultiIndex com todas as combinações possíveis de anos e municípios
+    idx_perde = pd.MultiIndex.from_product([anos, municipios_perde], names=['ano_evento', 'chave_mun_uf_evento'])
+    # Reindexar o DataFrame para incluir todas as combinações e preencher valores faltantes com 0
+    df_perde = df_perde.set_index(['ano_evento', 'chave_mun_uf_evento']).reindex(idx_perde, fill_value=0).reset_index()
 
     # Criar um MultiIndex com todas as combinações possíveis de anos e municípios
-    idx = pd.MultiIndex.from_product([anos, municipios], names=['ano_evento', 'chave_mun_uf_evento'])
+    idx_ganha = pd.MultiIndex.from_product([anos, municipios_ganha], names=['ano_evento', 'chave_mun_uf_evento'])
     # Reindexar o DataFrame para incluir todas as combinações e preencher valores faltantes com 0
-    df_ganha = df_ganha.set_index(['ano_evento', 'chave_mun_uf_evento']).reindex(idx, fill_value=0).reset_index()
+    df_ganha = df_ganha.set_index(['ano_evento', 'chave_mun_uf_evento']).reindex(idx_ganha, fill_value=0).reset_index()
+
 
     df_ganha.columns = [f'compara_{i}' for i in df_ganha.columns]
     df_perde = df_perde.merge(df_ganha, how='left', left_on='ano_evento', right_on='compara_ano_evento')
@@ -482,7 +488,7 @@ for munic in chave_uf_mun:
 
 df_perde_ganha = pd.concat(lista_perde_ganha)
 del lista_perde_ganha
-
+df_perde_ganha = df_perde_ganha[~df_perde_ganha['compara_chave_mun_uf_evento'].isnull()].reset_index(drop=True)
 contador = 0
 lista_perde_ganha_cor = []
 for munic in chave_uf_mun:
@@ -524,6 +530,7 @@ for munic in chave_uf_mun:
             df_cor['cor_dif_nasc'] = df_cor[['dif_QTD_NASCIMENTOS', 'compara_dif_QTD_NASCIMENTOS']].corr().iloc[0, 1]
             lista_perde_ganha_cor.append(df_cor)
         else:
-            sys.exit()
+            sys.exit(f'Rodada {contador} de {len(chave_uf_mun)} munic perde {munic} munic ganha {munic2} subrodada {contador2} de {len(munic_ganha)}')
 
-
+df_perde_ganha_cor = pd.concat(lista_perde_ganha_cor).reset_index(drop=True)
+df_perde_ganha_cor.to_csv('./df_mun_proximos_cor_nascimentos.csv', index=False)
