@@ -456,8 +456,12 @@ colunas = [
     'chave_mun_uf_evento'
     , 'ano_evento'
     , 'QTD_NASCIMENTOS'
-    , 'var_QTD_NASCIMENTOS'
-    , 'dif_QTD_NASCIMENTOS'
+    , 'QTINST'
+    , 'QTLEIT'
+    , 'TP_UNID_5'
+    , 'TP_UNID_7'
+    , 'TP_UNID_15'
+    , 'TP_UNID_36'
 ]
 contador = 1
 lista_perde_ganha = []
@@ -501,30 +505,40 @@ for munic in chave_uf_mun:
         contador2 += 1
         df_cor = df[df['compara_chave_mun_uf_evento']==munic2].sort_values('ano_evento')
         if len(df_cor) == 5:
-            df_cor['var_QTD_NASCIMENTOS'] = df_cor.sort_values(
-                by=['ano_evento']
-            ).groupby(
-                ['chave_mun_uf_evento']
-            )['QTD_NASCIMENTOS'].pct_change()
+            # municipio perde
+            df_cor['var_QTD_NASCIMENTOS'] = df_cor.sort_values(by=['ano_evento']).groupby(['chave_mun_uf_evento'])['QTD_NASCIMENTOS'].pct_change()
+            df_cor['var_QTINST'] = df_cor.sort_values(by=['ano_evento']).groupby(['chave_mun_uf_evento'])['QTINST'].pct_change()
+            df_cor['var_QTLEIT'] = df_cor.sort_values(by=['ano_evento']).groupby(['chave_mun_uf_evento'])['QTLEIT'].pct_change()
+            df_cor['var_TP_UNID_5'] = df_cor.sort_values(by=['ano_evento']).groupby(['chave_mun_uf_evento'])['TP_UNID_5'].pct_change()
+            df_cor['var_TP_UNID_7'] = df_cor.sort_values(by=['ano_evento']).groupby(['chave_mun_uf_evento'])['TP_UNID_7'].pct_change()
+            df_cor['var_TP_UNID_15'] = df_cor.sort_values(by=['ano_evento']).groupby(['chave_mun_uf_evento'])['TP_UNID_15'].pct_change()
+            df_cor['var_TP_UNID_36'] = df_cor.sort_values(by=['ano_evento']).groupby(['chave_mun_uf_evento'])['TP_UNID_36'].pct_change()
 
-            df_cor['dif_QTD_NASCIMENTOS'] = df_cor.sort_values(
-                by=['ano_evento']
-            ).groupby(
-                ['chave_mun_uf_evento']
-            )['QTD_NASCIMENTOS'].diff()
+            df_cor['dif_QTD_NASCIMENTOS'] = df_cor.sort_values(by=['ano_evento']).groupby(['chave_mun_uf_evento'])['QTD_NASCIMENTOS'].diff()
+            df_cor['dif_QTINST'] = df_cor.sort_values(by=['ano_evento']).groupby(['chave_mun_uf_evento'])['QTINST'].diff()
+            df_cor['dif_QTLEIT'] = df_cor.sort_values(by=['ano_evento']).groupby(['chave_mun_uf_evento'])['QTLEIT'].diff()
+            df_cor['dif_TP_UNID_5'] = df_cor.sort_values(by=['ano_evento']).groupby(['chave_mun_uf_evento'])['TP_UNID_5'].diff()
+            df_cor['dif_TP_UNID_7'] = df_cor.sort_values(by=['ano_evento']).groupby(['chave_mun_uf_evento'])['TP_UNID_7'].diff()
+            df_cor['dif_TP_UNID_15'] = df_cor.sort_values(by=['ano_evento']).groupby(['chave_mun_uf_evento'])['TP_UNID_15'].diff()
+            df_cor['dif_TP_UNID_36'] = df_cor.sort_values(by=['ano_evento']).groupby(['chave_mun_uf_evento'])['TP_UNID_36'].diff()
 
-            df_cor['compara_var_QTD_NASCIMENTOS'] = df_cor.sort_values(
-                by=['compara_ano_evento']
-            ).groupby(
-                ['compara_chave_mun_uf_evento']
-            )['compara_QTD_NASCIMENTOS'].pct_change()
+            # municipio ganha
+            df_cor['compara_var_QTD_NASCIMENTOS'] = df_cor.sort_values(by=['compara_ano_evento']).groupby(['compara_chave_mun_uf_evento'])['compara_QTD_NASCIMENTOS'].pct_change()
+            df_cor['compara_var_QTINST'] =  df_cor.sort_values(by=['compara_ano_evento']).groupby(['compara_chave_mun_uf_evento'])['compara_QTINST'].pct_change()
+            df_cor['compara_var_QTLEIT'] = df_cor.sort_values(by=['compara_ano_evento']).groupby(['compara_chave_mun_uf_evento'])['compara_QTLEIT'].pct_change()
+            df_cor['compara_var_TP_UNID_5'] = df_cor.sort_values(by=['compara_ano_evento']).groupby(['compara_chave_mun_uf_evento'])['compara_TP_UNID_5'].pct_change()
+            df_cor['compara_var_TP_UNID_7'] = df_cor.sort_values(by=['compara_ano_evento']).groupby(['compara_chave_mun_uf_evento'])['compara_TP_UNID_7'].pct_change()
+            df_cor['compara_var_TP_UNID_15'] = df_cor.sort_values(by=['compara_ano_evento']).groupby(['compara_chave_mun_uf_evento'])['compara_TP_UNID_15'].pct_change()
+            df_cor['compara_var_TP_UNID_36'] = df_cor.sort_values(by=['compara_ano_evento']).groupby(['compara_chave_mun_uf_evento'])['compara_TP_UNID_36'].pct_change()
 
-            df_cor['compara_dif_QTD_NASCIMENTOS'] = df_cor.sort_values(
-                by=['compara_ano_evento']
-            ).groupby(
-                ['compara_chave_mun_uf_evento']
-            )['compara_QTD_NASCIMENTOS'].diff()
-
+            df_cor['compara_dif_QTD_NASCIMENTOS'] = df_cor.sort_values(by=['compara_ano_evento']).groupby(['compara_chave_mun_uf_evento'])['compara_QTD_NASCIMENTOS'].diff()
+            df_cor['compara_dif_QTINST'] = df_cor.sort_values(by=['compara_ano_evento']).groupby(['compara_chave_mun_uf_evento'])['compara_QTINST'].diff()
+            df_cor['compara_dif_QTLEIT'] = df_cor.sort_values(by=['compara_ano_evento']).groupby(['compara_chave_mun_uf_evento'])['compara_QTLEIT'].diff()
+            df_cor['compara_dif_TP_UNID_5'] = df_cor.sort_values(by=['compara_ano_evento']).groupby(['compara_chave_mun_uf_evento'])['compara_TP_UNID_5'].diff()
+            df_cor['compara_dif_TP_UNID_7'] = df_cor.sort_values(by=['compara_ano_evento']).groupby(['compara_chave_mun_uf_evento'])['compara_TP_UNID_7'].diff()
+            df_cor['compara_dif_TP_UNID_15'] = df_cor.sort_values(by=['compara_ano_evento']).groupby(['compara_chave_mun_uf_evento'])['compara_TP_UNID_15'].diff()
+            df_cor['compara_dif_TP_UNID_36'] = df_cor.sort_values(by=['compara_ano_evento']).groupby(['compara_chave_mun_uf_evento'])['compara_TP_UNID_36'].diff()
+            # Correlações
             df_cor = df_cor[df_cor['ano_evento']!=2018]
             df_cor['cor_var_nasc'] = df_cor[['var_QTD_NASCIMENTOS', 'compara_var_QTD_NASCIMENTOS']].corr().iloc[0, 1]
             df_cor['cor_dif_nasc'] = df_cor[['dif_QTD_NASCIMENTOS', 'compara_dif_QTD_NASCIMENTOS']].corr().iloc[0, 1]
