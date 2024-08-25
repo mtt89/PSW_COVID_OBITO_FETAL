@@ -446,7 +446,7 @@ del lista, lista2
 
 # selecionando somente municípios com até 100 km de distância
 lista_100 = lista3[lista3['dist_km'] <= 100.99].sort_values(['municipio1', 'dist_km']).reset_index(drop=True)
-del lista3
+#del lista3
 variacoes_negativas = df_agrupado.loc[(df_agrupado['ano_evento'] != 2018) &
                               (df_agrupado['var_QTD_NASCIMENTOS'] < 0)].reset_index(drop=True)
 
@@ -547,4 +547,7 @@ for munic in chave_uf_mun:
             sys.exit(f'Rodada {contador} de {len(chave_uf_mun)} munic perde {munic} munic ganha {munic2} subrodada {contador2} de {len(munic_ganha)}')
 
 df_perde_ganha_cor = pd.concat(lista_perde_ganha_cor).reset_index(drop=True)
+
+df_perde_ganha_cor_ = df_perde_ganha_cor.merge(lista3, how='left', left_on=[], right_on=[])
+
 df_perde_ganha_cor.to_csv('./df_mun_proximos_cor_nascimentos.csv', index=False)
