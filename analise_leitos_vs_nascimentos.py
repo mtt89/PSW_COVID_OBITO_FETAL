@@ -4,154 +4,157 @@ import sys
 import matplotlib.pyplot as plt
 from geopy.distance import geodesic
 
-df = pd.read_csv('base_suja/base_unificada_suja.csv')
+# df = pd.read_csv('base_suja/base_unificada_suja.csv')
+#
+# colunas = [
+#     'data_evento'
+#     , 'ano_evento'
+#     , 'evento_MUNNOMEX'
+#     , 'evento_SIGLA_UF'
+#     , 'sum_CENTROBS'
+#     , 'sum_QTINST34'
+#     , 'sum_QTINST35'
+#     , 'sum_QTINST36'
+#     , 'sum_QTINST37'
+#     , 'sum_QTLEIT34'
+#     , 'sum_QTLEIT38'
+#     , 'sum_QTLEIT39'
+#     , 'sum_QTLEIT40'
+#     , 'sum_CENTRNEO'
+#     , 'TP_UNID_5'
+#     , 'TP_UNID_7'
+#     , 'TP_UNID_15'
+#     , 'TP_UNID_36'
+#     , 'FLAG_BASE'
+# ]
+# df = df[colunas]
+#
+# df['mes_ano_evento'] = [str(i)[0:7] for i in df['data_evento']]
+#
+# df_agrupado = df.groupby(
+#  [
+#     'evento_SIGLA_UF'
+#     , 'evento_MUNNOMEX'
+#     , 'ano_evento'
+#  ]
+#     , as_index=False
+# ).agg(
+#     QTINST34=pd.NamedAgg(column='sum_QTINST34', aggfunc='median')
+#     , QTINST35=pd.NamedAgg(column='sum_QTINST35', aggfunc='median')
+#     , QTINST36=pd.NamedAgg(column='sum_QTINST36', aggfunc='median')
+#     , QTINST37=pd.NamedAgg(column='sum_QTINST37', aggfunc='median')
+#     , QTLEIT34=pd.NamedAgg(column='sum_QTLEIT34', aggfunc='median')
+#     , QTLEIT38=pd.NamedAgg(column='sum_QTLEIT38', aggfunc='median')
+#     , QTLEIT39=pd.NamedAgg(column='sum_QTLEIT39', aggfunc='median')
+#     , QTLEIT40=pd.NamedAgg(column='sum_QTLEIT40', aggfunc='median')
+#     , TP_UNID_5=pd.NamedAgg(column='TP_UNID_5', aggfunc='median')
+#     , TP_UNID_7=pd.NamedAgg(column='TP_UNID_7', aggfunc='median')
+#     , TP_UNID_15=pd.NamedAgg(column='TP_UNID_15', aggfunc='median')
+#     , TP_UNID_36=pd.NamedAgg(column='TP_UNID_36', aggfunc='median')
+#     , QTD_NASCIMENTOS=pd.NamedAgg(column='data_evento', aggfunc='size')
+#     )
 
-colunas = [
-    'data_evento'
-    , 'ano_evento'
-    , 'evento_MUNNOMEX'
-    , 'evento_SIGLA_UF'
-    , 'sum_CENTROBS'
-    , 'sum_QTINST34'
-    , 'sum_QTINST35'
-    , 'sum_QTINST36'
-    , 'sum_QTINST37'
-    , 'sum_QTLEIT34'
-    , 'sum_QTLEIT38'
-    , 'sum_QTLEIT39'
-    , 'sum_QTLEIT40'
-    , 'sum_CENTRNEO'
-    , 'TP_UNID_5'
-    , 'TP_UNID_7'
-    , 'TP_UNID_15'
-    , 'TP_UNID_36'
-    , 'FLAG_BASE'
-]
-df = df[colunas]
+# df_agrupado.to_csv('check_leitos_vs_nascimentos.csv', index=False)
 
-df['mes_ano_evento'] = [str(i)[0:7] for i in df['data_evento']]
+# df_agrupado = pd.read_csv('./base_limpa/check_leitos_vs_nascimentos.csv')
+#
+# df_agrupado['QTINST'] = df_agrupado['QTINST34'] + df_agrupado['QTINST35'] + df_agrupado['QTINST36'] + df_agrupado['QTINST37']
+# df_agrupado['QTLEIT'] = df_agrupado['QTLEIT34'] + df_agrupado['QTLEIT38'] + df_agrupado['QTLEIT39'] + df_agrupado['QTLEIT40']
+#
+# # Variação
+# df_agrupado['var_QTD_NASCIMENTOS'] = df_agrupado.sort_values(
+#   by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
+# ).groupby(
+#   ['evento_SIGLA_UF', 'evento_MUNNOMEX']
+# )['QTD_NASCIMENTOS'].pct_change()
+#
+# df_agrupado['var_QTINST'] = df_agrupado.sort_values(
+#   by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
+# ).groupby(
+#   ['evento_SIGLA_UF', 'evento_MUNNOMEX']
+# )['QTINST'].pct_change()
+#
+# df_agrupado['var_QTLEIT'] = df_agrupado.sort_values(
+#   by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
+# ).groupby(
+#   ['evento_SIGLA_UF', 'evento_MUNNOMEX']
+# )['QTLEIT'].pct_change()
+#
+# df_agrupado['var_TP_UNID_5'] = df_agrupado.sort_values(
+#   by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
+# ).groupby(
+#   ['evento_SIGLA_UF', 'evento_MUNNOMEX']
+# )['TP_UNID_5'].pct_change()
+#
+# df_agrupado['var_TP_UNID_7'] = df_agrupado.sort_values(
+#   by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
+# ).groupby(
+#   ['evento_SIGLA_UF', 'evento_MUNNOMEX']
+# )['TP_UNID_7'].pct_change()
+#
+# df_agrupado['var_TP_UNID_15'] = df_agrupado.sort_values(
+#   by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
+# ).groupby(
+#   ['evento_SIGLA_UF', 'evento_MUNNOMEX']
+# )['TP_UNID_15'].pct_change()
+#
+# df_agrupado['var_TP_UNID_36'] = df_agrupado.sort_values(
+#   by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
+# ).groupby(
+#   ['evento_SIGLA_UF', 'evento_MUNNOMEX']
+# )['TP_UNID_36'].pct_change()
+#
+# # Diferença
+# df_agrupado['dif_QTD_NASCIMENTOS'] = df_agrupado.sort_values(
+#   by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
+# ).groupby(
+#   ['evento_SIGLA_UF', 'evento_MUNNOMEX']
+# )['QTD_NASCIMENTOS'].diff()
+#
+# df_agrupado['dif_QTINST'] = df_agrupado.sort_values(
+#   by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
+# ).groupby(
+#   ['evento_SIGLA_UF', 'evento_MUNNOMEX']
+# )['QTINST'].diff()
+#
+# df_agrupado['dif_QTLEIT'] = df_agrupado.sort_values(
+#   by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
+# ).groupby(
+#   ['evento_SIGLA_UF', 'evento_MUNNOMEX']
+# )['QTLEIT'].diff()
+#
+# df_agrupado['dif_TP_UNID_5'] = df_agrupado.sort_values(
+#   by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
+# ).groupby(
+#   ['evento_SIGLA_UF', 'evento_MUNNOMEX']
+# )['TP_UNID_5'].diff()
+#
+# df_agrupado['dif_TP_UNID_7'] = df_agrupado.sort_values(
+#   by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
+# ).groupby(
+#   ['evento_SIGLA_UF', 'evento_MUNNOMEX']
+# )['TP_UNID_7'].diff()
+#
+# df_agrupado['dif_TP_UNID_15'] = df_agrupado.sort_values(
+#   by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
+# ).groupby(
+#   ['evento_SIGLA_UF', 'evento_MUNNOMEX']
+# )['TP_UNID_15'].diff()
+#
+# df_agrupado['dif_TP_UNID_36'] = df_agrupado.sort_values(
+#   by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
+# ).groupby(
+#   ['evento_SIGLA_UF', 'evento_MUNNOMEX']
+# )['TP_UNID_36'].diff()
+#
+# # Removendo os missings
+# df_agrupado = df_agrupado.fillna(0)
+#
+# # Separando municípios que tiveram menos que 500 nascimentos em um ano
+# df_agrupado['chave_mun_uf_evento'] = [f'{i}_{j}' for i, j in zip(df_agrupado['evento_MUNNOMEX'], df_agrupado['evento_SIGLA_UF'])]
+# df_agrupado.to_csv('./base_limpa/check_leitos_vs_nascimentos.csv', index=False)
 
-df_agrupado = df.groupby(
- [
-    'evento_SIGLA_UF'
-    , 'evento_MUNNOMEX'
-    , 'ano_evento'
- ]
-    , as_index=False
-).agg(
-    QTINST34=pd.NamedAgg(column='sum_QTINST34', aggfunc='median')
-    , QTINST35=pd.NamedAgg(column='sum_QTINST35', aggfunc='median')
-    , QTINST36=pd.NamedAgg(column='sum_QTINST36', aggfunc='median')
-    , QTINST37=pd.NamedAgg(column='sum_QTINST37', aggfunc='median')
-    , QTLEIT34=pd.NamedAgg(column='sum_QTLEIT34', aggfunc='median')
-    , QTLEIT38=pd.NamedAgg(column='sum_QTLEIT38', aggfunc='median')
-    , QTLEIT39=pd.NamedAgg(column='sum_QTLEIT39', aggfunc='median')
-    , QTLEIT40=pd.NamedAgg(column='sum_QTLEIT40', aggfunc='median')
-    , TP_UNID_5=pd.NamedAgg(column='TP_UNID_5', aggfunc='median')
-    , TP_UNID_7=pd.NamedAgg(column='TP_UNID_7', aggfunc='median')
-    , TP_UNID_15=pd.NamedAgg(column='TP_UNID_15', aggfunc='median')
-    , TP_UNID_36=pd.NamedAgg(column='TP_UNID_36', aggfunc='median')
-    , QTD_NASCIMENTOS=pd.NamedAgg(column='data_evento', aggfunc='size')
-    )
-
-#df_agrupado.to_csv('check_leitos_vs_nascimentos.csv', index=False)
-
-df_agrupado = pd.read_csv('check_leitos_vs_nascimentos.csv')
-
-df_agrupado['QTINST'] = df_agrupado['QTINST34'] + df_agrupado['QTINST35'] + df_agrupado['QTINST36'] + df_agrupado['QTINST37']
-df_agrupado['QTLEIT'] = df_agrupado['QTLEIT34'] + df_agrupado['QTLEIT38'] + df_agrupado['QTLEIT39'] + df_agrupado['QTLEIT40']
-
-# Variação
-df_agrupado['var_QTD_NASCIMENTOS'] = df_agrupado.sort_values(
-  by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
-).groupby(
-  ['evento_SIGLA_UF', 'evento_MUNNOMEX']
-)['QTD_NASCIMENTOS'].pct_change()
-
-df_agrupado['var_QTINST'] = df_agrupado.sort_values(
-  by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
-).groupby(
-  ['evento_SIGLA_UF', 'evento_MUNNOMEX']
-)['QTINST'].pct_change()
-
-df_agrupado['var_QTLEIT'] = df_agrupado.sort_values(
-  by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
-).groupby(
-  ['evento_SIGLA_UF', 'evento_MUNNOMEX']
-)['QTLEIT'].pct_change()
-
-df_agrupado['var_TP_UNID_5'] = df_agrupado.sort_values(
-  by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
-).groupby(
-  ['evento_SIGLA_UF', 'evento_MUNNOMEX']
-)['TP_UNID_5'].pct_change()
-
-df_agrupado['var_TP_UNID_7'] = df_agrupado.sort_values(
-  by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
-).groupby(
-  ['evento_SIGLA_UF', 'evento_MUNNOMEX']
-)['TP_UNID_7'].pct_change()
-
-df_agrupado['var_TP_UNID_15'] = df_agrupado.sort_values(
-  by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
-).groupby(
-  ['evento_SIGLA_UF', 'evento_MUNNOMEX']
-)['TP_UNID_15'].pct_change()
-
-df_agrupado['var_TP_UNID_36'] = df_agrupado.sort_values(
-  by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
-).groupby(
-  ['evento_SIGLA_UF', 'evento_MUNNOMEX']
-)['TP_UNID_36'].pct_change()
-
-# Diferença
-df_agrupado['dif_QTD_NASCIMENTOS'] = df_agrupado.sort_values(
-  by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
-).groupby(
-  ['evento_SIGLA_UF', 'evento_MUNNOMEX']
-)['QTD_NASCIMENTOS'].diff()
-
-df_agrupado['dif_QTINST'] = df_agrupado.sort_values(
-  by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
-).groupby(
-  ['evento_SIGLA_UF', 'evento_MUNNOMEX']
-)['QTINST'].diff()
-
-df_agrupado['dif_QTLEIT'] = df_agrupado.sort_values(
-  by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
-).groupby(
-  ['evento_SIGLA_UF', 'evento_MUNNOMEX']
-)['QTLEIT'].diff()
-
-df_agrupado['dif_TP_UNID_5'] = df_agrupado.sort_values(
-  by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
-).groupby(
-  ['evento_SIGLA_UF', 'evento_MUNNOMEX']
-)['TP_UNID_5'].diff()
-
-df_agrupado['dif_TP_UNID_7'] = df_agrupado.sort_values(
-  by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
-).groupby(
-  ['evento_SIGLA_UF', 'evento_MUNNOMEX']
-)['TP_UNID_7'].diff()
-
-df_agrupado['dif_TP_UNID_15'] = df_agrupado.sort_values(
-  by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
-).groupby(
-  ['evento_SIGLA_UF', 'evento_MUNNOMEX']
-)['TP_UNID_15'].diff()
-
-df_agrupado['dif_TP_UNID_36'] = df_agrupado.sort_values(
-  by=['evento_SIGLA_UF', 'evento_MUNNOMEX', 'ano_evento']
-).groupby(
-  ['evento_SIGLA_UF', 'evento_MUNNOMEX']
-)['TP_UNID_36'].diff()
-
-# Removendo os missings
-df_agrupado = df_agrupado.fillna(0)
-
-# Separando municípios que tiveram menos que 500 nascimentos em um ano
-df_agrupado['chave_mun_uf_evento'] = [f'{i}_{j}' for i, j in zip(df_agrupado['evento_MUNNOMEX'], df_agrupado['evento_SIGLA_UF'])]
+df_agrupado = pd.read_csv('./base_limpa/check_leitos_vs_nascimentos.csv')
 df_nasc_menor_500 = df_agrupado[df_agrupado['QTD_NASCIMENTOS'] <= 500]
 lista_mun_interesse = pd.unique(df_nasc_menor_500['chave_mun_uf_evento'])
 
