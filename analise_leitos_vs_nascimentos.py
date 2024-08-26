@@ -584,8 +584,7 @@ df['flag_recebe'] = [flag_perde_ganha( var_QTD_NASCIMENTOS=aa, var_QTINST=bb, va
      , df['var_TP_UNID_36'], df['cor_var_nasc'])]
 
 
-
+df.to_csv('./resultados/check_leitos_vs_nascimentos/df_mun_proximos_cor_nascimentos_com_distancia.csv', index=False)
 
 
     
-df.columns
