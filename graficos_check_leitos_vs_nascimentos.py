@@ -47,5 +47,41 @@ for uf in ufs:
    plt.xlabel('Variação TP_UNID_5')
    plt.ylabel('Variação QTDNASC')
    plt.grid(True)
-   plt.savefig(f'resultados/check_leitos_vs_nascimentos/graficos/dispersao_var_inst_vs_var_nasc_{uf}.png', format='png', dpi=300)
+   plt.savefig(f'resultados/check_leitos_vs_nascimentos/graficos/dispersao_var_tp_unid_5_vs_var_nasc_{uf}.png', format='png', dpi=300)
+   plt.clf()
+
+for uf in ufs:
+   subset = df_interesse[df_interesse['evento_SIGLA_UF'] == uf]
+   corr = round(df_correlacoes_mun_menor_500.loc[df_correlacoes_mun_menor_500['evento_SIGLA_UF'] == uf, 'correlacao_TP_UNID_7'], 2)
+   plt.figure(figsize=(10, 6))
+   plt.scatter(subset['var_TP_UNID_7'], subset['var_QTD_NASCIMENTOS'], alpha=0.5)
+   plt.title(f'TP_UNID_7 VS Nasc corr {corr.reset_index(drop=True)[0]} municipio {uf} ')
+   plt.xlabel('Variação TP_UNID_7')
+   plt.ylabel('Variação QTDNASC')
+   plt.grid(True)
+   plt.savefig(f'resultados/check_leitos_vs_nascimentos/graficos/dispersao_var_tp_unid_7_vs_var_nasc_{uf}.png', format='png', dpi=300)
+   plt.clf()
+
+for uf in ufs:
+   subset = df_interesse[df_interesse['evento_SIGLA_UF'] == uf]
+   corr = round(df_correlacoes_mun_menor_500.loc[df_correlacoes_mun_menor_500['evento_SIGLA_UF'] == uf, 'correlacao_TP_UNID_15'], 2)
+   plt.figure(figsize=(10, 6))
+   plt.scatter(subset['var_TP_UNID_15'], subset['var_QTD_NASCIMENTOS'], alpha=0.5)
+   plt.title(f'TP_UNID_15 VS Nasc corr {corr.reset_index(drop=True)[0]} municipio {uf} ')
+   plt.xlabel('Variação TP_UNID_15')
+   plt.ylabel('Variação QTDNASC')
+   plt.grid(True)
+   plt.savefig(f'resultados/check_leitos_vs_nascimentos/graficos/dispersao_var_tp_unid_15_vs_var_nasc_{uf}.png', format='png', dpi=300)
+   plt.clf()
+
+for uf in ufs:
+   subset = df_interesse[df_interesse['evento_SIGLA_UF'] == uf]
+   corr = round(df_correlacoes_mun_menor_500.loc[df_correlacoes_mun_menor_500['evento_SIGLA_UF'] == uf, 'correlacao_TP_UNID_36'], 2)
+   plt.figure(figsize=(10, 6))
+   plt.scatter(subset['var_TP_UNID_36'], subset['var_QTD_NASCIMENTOS'], alpha=0.5)
+   plt.title(f'TP_UNID_36 VS Nasc corr {corr.reset_index(drop=True)[0]} municipio {uf} ')
+   plt.xlabel('Variação TP_UNID_36')
+   plt.ylabel('Variação QTDNASC')
+   plt.grid(True)
+   plt.savefig(f'resultados/check_leitos_vs_nascimentos/graficos/dispersao_var_tp_unid_36_vs_var_nasc_{uf}.png', format='png', dpi=300)
    plt.clf()
