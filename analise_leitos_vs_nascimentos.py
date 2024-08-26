@@ -548,6 +548,11 @@ for munic in chave_uf_mun:
 
 df_perde_ganha_cor = pd.concat(lista_perde_ganha_cor).reset_index(drop=True)
 
-df_perde_ganha_cor_ = df_perde_ganha_cor.merge(lista3, how='left', left_on=[], right_on=[])
+df_perde_ganha_cor_ = df_perde_ganha_cor.merge(lista3, how='left', left_on=['chave_mun_uf_evento', 'compara_chave_mun_uf_evento']
+                                               , right_on=['municipio1',  'municipio2'])
 
-df_perde_ganha_cor.to_csv('./df_mun_proximos_cor_nascimentos.csv', index=False)
+df_perde_ganha_cor_.to_csv('./df_mun_proximos_cor_nascimentos_com_distancia.csv', index=False)
+
+
+
+
