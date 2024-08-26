@@ -564,6 +564,28 @@ df_perde_ganha_cor_ = df_perde_ganha_cor.merge(lista3, how='left', left_on=['cha
 
 df_perde_ganha_cor_.to_csv('./df_mun_proximos_cor_nascimentos_com_distancia.csv', index=False)
 
+########################################################################################################################
+
+df = pd.read_csv('./resultados/check_leitos_vs_nascimentos/df_mun_proximos_cor_nascimentos_com_distancia.csv')
+
+def flag_perde_ganha(
+        var_QTD_NASCIMENTOS: float, var_QTINST: float, var_QTLEIT: float, var_TP_UNID_5: float
+        , var_TP_UNID_7: float, var_TP_UNID_15: float, var_TP_UNID_36: float, cor_var_nasc: float):
+    if (((var_QTD_NASCIMENTOS * var_QTINST) > 0) | ((var_QTD_NASCIMENTOS * var_QTLEIT) > 0) | ((var_QTD_NASCIMENTOS * var_TP_UNID_5) > 0) | \
+        ((var_QTD_NASCIMENTOS * var_TP_UNID_7) > 0) | ((var_QTD_NASCIMENTOS * var_TP_UNID_15) > 0) | ((var_QTD_NASCIMENTOS * var_TP_UNID_36) > 0)) & \
+        (cor_var_nasc >= 0.5):
+        return 1
+    else:
+        return 0
+
+df['flag_recebe'] = [flag_perde_ganha( var_QTD_NASCIMENTOS=aa, var_QTINST=bb, var_QTLEIT=cc, var_TP_UNID_5=dd
+        , var_TP_UNID_7=ee, var_TP_UNID_15=ff, var_TP_UNID_36=gg, cor_var_nasc=ii) for aa,bb,cc,dd,ee,ff,gg,ii in zip(
+     df['var_QTD_NASCIMENTOS'], df['var_QTINST'], df['var_QTLEIT'], df['var_TP_UNID_5'], df['var_TP_UNID_7'], df['var_TP_UNID_15']
+     , df['var_TP_UNID_36'], df['cor_var_nasc'])]
 
 
 
+
+
+    
+df.columns
