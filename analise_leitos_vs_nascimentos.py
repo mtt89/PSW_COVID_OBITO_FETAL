@@ -152,9 +152,11 @@ from geopy.distance import geodesic
 #
 # # Separando municípios que tiveram menos que 500 nascimentos em um ano
 # df_agrupado['chave_mun_uf_evento'] = [f'{i}_{j}' for i, j in zip(df_agrupado['evento_MUNNOMEX'], df_agrupado['evento_SIGLA_UF'])]
-# df_agrupado.to_csv('./base_limpa/check_leitos_vs_nascimentos.csv', index=False)
+# df_agrupado.to_csv('./base_limpa/check_leitos_vs_nascimentos.csv', index=False, sep=';', decimal=',')
 
-df_agrupado = pd.read_csv('./base_limpa/check_leitos_vs_nascimentos.csv')
+# Carregando a base agrupada com contagens de nascimento e mediana de leitos
+df_agrupado = pd.read_csv('./base_limpa/check_leitos_vs_nascimentos.csv', sep=';', decimal=',')
+# Selecionando municipios com menos de 500 nascimentos em pelo menos um ano
 df_nasc_menor_500 = df_agrupado[df_agrupado['QTD_NASCIMENTOS'] <= 500]
 lista_mun_interesse = pd.unique(df_nasc_menor_500['chave_mun_uf_evento'])
 
@@ -169,7 +171,7 @@ colunas = [
 ]
 # Removendo os missings
 df_interesse = df_interesse[colunas]
-
+df_interesse.to_csv('df_interesse.csv', index=False)
 # Lista para armazenar as correlações todos os anos
 correlacoes = []
 ufs =  pd.unique(df_interesse['evento_SIGLA_UF'])
@@ -190,6 +192,7 @@ for uf in ufs:
 
 # Criar um DataFrame com os resultados
 df_correlacoes = pd.DataFrame(correlacoes)
+df_correlacoes.to_csv('df_correlacoes_municipios_menor_500.csv', index=False)
 aa=df_correlacoes[(df_correlacoes['correlacao_QTLEIT'] >= 0.5) | (df_correlacoes['correlacao_QTINST'] >= 0.5) |
               (df_correlacoes['correlacao_TP_UNID_5'] >= 0.5) | (df_correlacoes['correlacao_TP_UNID_7'] >= 0.5) |
               (df_correlacoes['correlacao_TP_UNID_15'] >= 0.5) | (df_correlacoes['correlacao_TP_UNID_36'] >= 0.5)]
@@ -212,7 +215,7 @@ aa
 
 # Lista para armazenar as correlações todos os anos
 correlacoes_ano = []
-ufs =  pd.unique(df_interesse['evento_SIGLA_UF'])
+ufs = pd.unique(df_interesse['evento_SIGLA_UF'])
 # Agrupar os dados por município e calcular a correlação
 for uf in ufs:
     for ano in [2019, 2020, 2021, 2022]:
@@ -231,6 +234,7 @@ for uf in ufs:
 
 # Criar um DataFrame com os resultados
 df_correlacoes_ano = pd.DataFrame(correlacoes_ano)
+df_correlacoes_ano.to_csv('df_correlacoes_municipios_menor_500_por_ano.csv', index=False)
 bb=df_correlacoes_ano[(df_correlacoes_ano['correlacao_QTLEIT'] >= 0.5) | (df_correlacoes_ano['correlacao_QTINST'] >= 0.5) |
               (df_correlacoes_ano['correlacao_TP_UNID_5'] >= 0.5) | (df_correlacoes_ano['correlacao_TP_UNID_7'] >= 0.5) |
               (df_correlacoes_ano['correlacao_TP_UNID_15'] >= 0.5) | (df_correlacoes_ano['correlacao_TP_UNID_36'] >= 0.5)]
@@ -257,6 +261,7 @@ for uf in ufs:
 
 # Criar um DataFrame com os resultados
 df_correlacoes = pd.DataFrame(correlacoes)
+df_correlacoes.to_csv('df_correlacoes_municipios_menor_500_negativos.csv', index=False)
 aa_=df_correlacoes[(df_correlacoes['correlacao_QTLEIT'] >= 0.5) | (df_correlacoes['correlacao_QTINST'] >= 0.5) |
               (df_correlacoes['correlacao_TP_UNID_5'] >= 0.5) | (df_correlacoes['correlacao_TP_UNID_7'] >= 0.5) |
               (df_correlacoes['correlacao_TP_UNID_15'] >= 0.5) | (df_correlacoes['correlacao_TP_UNID_36'] >= 0.5)]
@@ -283,6 +288,7 @@ for uf in ufs:
 
 # Criar um DataFrame com os resultados
 df_correlacoes_ano = pd.DataFrame(correlacoes_ano)
+df_correlacoes_ano.to_csv('df_correlacoes_municipios_menor_500_por_ano_negativos.csv', index=False)
 bb_=df_correlacoes_ano[(df_correlacoes_ano['correlacao_QTLEIT'] >= 0.5) | (df_correlacoes_ano['correlacao_QTINST'] >= 0.5) |
               (df_correlacoes_ano['correlacao_TP_UNID_5'] >= 0.5) | (df_correlacoes_ano['correlacao_TP_UNID_7'] >= 0.5) |
               (df_correlacoes_ano['correlacao_TP_UNID_15'] >= 0.5) | (df_correlacoes_ano['correlacao_TP_UNID_36'] >= 0.5)]
