@@ -283,7 +283,9 @@ df_correlacoes_ano = pd.DataFrame(correlacoes_ano)
 bb_=df_correlacoes_ano[(df_correlacoes_ano['correlacao_QTLEIT'] >= 0.5) | (df_correlacoes_ano['correlacao_QTINST'] >= 0.5) |
               (df_correlacoes_ano['correlacao_TP_UNID_5'] >= 0.5) | (df_correlacoes_ano['correlacao_TP_UNID_7'] >= 0.5) |
               (df_correlacoes_ano['correlacao_TP_UNID_15'] >= 0.5) | (df_correlacoes_ano['correlacao_TP_UNID_36'] >= 0.5)]
-
+########################################################################################################################
+# Verificar pra onde foi os nascimentos?
+########################################################################################################################
 #Variação entre municípios
 
 # Calcular a distância entre municipios selecionar os mais próximos dos municípios que tiveram queda e
